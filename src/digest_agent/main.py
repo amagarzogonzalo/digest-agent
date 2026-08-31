@@ -20,9 +20,10 @@ from digest_agent.adapters.driven.mistral_adapter import MistralAdapter
 from digest_agent.adapters.driven.fallback_provider import FallbackLLMProvider
 from digest_agent.adapters.driven.reportlab_adapter import ReportLabAdapter
 from digest_agent.adapters.driven.gmail_adapter import GmailAdapter
+from digest_agent.adapters.driven.resend_adapter import ResendAdapter
 from digest_agent.core.orchestrator import build_orchestrator
 from digest_agent.core.state import DigestState
-from digest_agent.ports import LLMProviderPort
+from digest_agent.ports import LLMProviderPort, NotifierPort
 
 
 def build_llm_provider() -> LLMProviderPort:
@@ -48,6 +49,17 @@ def build_llm_provider() -> LLMProviderPort:
     return FallbackLLMProvider(providers)
 
 
+def build_notifier() -> NotifierPort:
+    """Build the notifier chosen by NOTIFIER (default: smtp).
+
+    Options: smtp | resend
+    """
+    notifier = os.environ.get("NOTIFIER", "smtp").strip().lower()
+    if notifier == "resend":
+        return ResendAdapter()
+    return GmailAdapter()
+
+
 def main():
     # Load optional .env file (values are also read from real environment)
     load_dotenv()
@@ -71,14 +83,14 @@ def main():
     # Create the driven adapters
     github_adapter = GitHubAdapter(token=github_token, repos=github_repos, lookback_days=lookback_days)
     reportlab_adapter = ReportLabAdapter()
-    gmail_adapter = GmailAdapter()
+    notifier_adapter = build_notifier()
 
     # Build the orchestrator with the wired adapters
     orchestrator = build_orchestrator(
         activity_source=github_adapter,
         llm_provider=llm_provider,
         document_renderer=reportlab_adapter,
-        notifier=gmail_adapter,
+        notifier=notifier_adapter,
         max_attempts=5,
     )
 

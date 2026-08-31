@@ -63,6 +63,7 @@ END
 - **Hexagonal Architecture** — core depends only on abstract ports, no vendor SDKs
 - **Configurable LLM providers** — Groq, Mistral, and OpenRouter with automatic fallback
 - **SMTP notifier** — works with Gmail or any SMTP host (Ethereal for testing)
+- **Resend notifier** — switch via `NOTIFIER=resend` to send through the Resend HTTP API
 - **Evaluator-Optimizer loop** — bounded by `min(len(candidate_pool), max_attempts)`
 - **Three loop exit paths**: PASS / FAIL_EXHAUSTED / FAIL_BUDGET (all tested)
 - **Observability** — logs model selection, candidates tried, rejection reasons
@@ -110,6 +111,21 @@ then Mistral, then OpenRouter) and picks the first that passes. Providers
 without a configured key are skipped. If none configure a key, the run
 aborts with a clear error.
 
+### Notifiers
+
+Set `NOTIFIER` to choose how the digest is delivered (default `smtp`):
+
+| `NOTIFIER` | How | Key config |
+|---|---|---|
+| `smtp` | Gmail / any SMTP server | `GMAIL_*` or `SMTP_*` below |
+| `resend` | Resend HTTP API | `RESEND_API_KEY` (+ optional `RESEND_FROM`) |
+
+**Resend:** create a key at https://resend.com/api-keys. Out of the box Resend
+only lets you send *to your own* email (the one you signed up with); to send to
+other addresses you must verify a domain under Domains. Until then, set
+`RECIPIENT_EMAIL` to your signup address. `RESEND_FROM` defaults to
+`onboarding@resend.dev`.
+
 ### Environment Variables
 
 All values can be set in `.env` or as environment variables.
@@ -127,6 +143,9 @@ All values can be set in `.env` or as environment variables.
 | `SMTP_USER` / `SMTP_PASSWORD` | No | SMTP credentials (fall back to GMAIL_* ) |
 | `GMAIL_ADDRESS` | No | Gmail address (used as SMTP user fallback) |
 | `GMAIL_APP_PASSWORD` | No | Gmail app password |
+| `NOTIFIER` | No | Notifier to use: `smtp` (default) or `resend` |
+| `RESEND_API_KEY` | No* | Resend API key (for `NOTIFIER=resend`) |
+| `RESEND_FROM` | No | Resend sender (default `onboarding@resend.dev`) |
 | `RECIPIENT_EMAIL` | No | Recipient email (defaults to SMTP user) |
 | `LOOKBACK_DAYS` | No | Days to look back (default: 1) |
 | `DIGEST_OUTPUT_DIR` | No | Directory for generated PDFs (default: system temp dir) |
