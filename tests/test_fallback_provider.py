@@ -3,7 +3,7 @@
 import pytest
 
 from digest_agent.adapters.driven.fallback_provider import FallbackLLMProvider
-from digest_agent.adapters.driven.openai_compat import strip_reasoning_prefix
+from digest_agent.core.text_utils import strip_reasoning_prefix
 from digest_agent.ports import LLMProviderPort, ModelId, TestResult, CompletionError
 
 

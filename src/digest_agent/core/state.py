@@ -31,6 +31,12 @@ class DigestState:
     pdf_path: str = ""
     email_sent: bool = False
 
+    # Review / refine loop state
+    review_count: int = 0
+    max_reviews: int = 2
+    last_critique: str = ""
+    review_decision: str = ""  # "accept" | "refine" | "give_up"
+
     # Terminal state
     outcome: str = ""  # "success", "fail_exhausted", "fail_budget", "error"
     error_message: str = ""

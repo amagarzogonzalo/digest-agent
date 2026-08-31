@@ -52,11 +52,21 @@ Two composable patterns from Anthropic's agent-design taxonomy:
 START
   -> fetch_github            [Orchestrator calls ActivitySourcePort]
   -> select_and_test_model   [LOOP: cycles until PASS, FAIL_EXHAUSTED, or FAIL_BUDGET]
-  -> summarize                [Orchestrator calls LLMProviderPort]
-  -> render_pdf               [Orchestrator calls DocumentRendererPort]
-  -> send_notification        [Orchestrator calls NotifierPort]
+  -> summarize               [Orchestrator calls LLMProviderPort]
+  -> review <-> refine       [LOOP: critique + rewrite against a rubric, bounded by max_reviews]
+  -> render_pdf              [Orchestrator calls DocumentRendererPort]
+  -> send_notification       [Orchestrator calls NotifierPort]
 END
 ```
+
+Two bounded loops (both proven to terminate):
+
+1. **Model selection** — Evaluator-Optimizer bounded by the candidate pool /
+   `max_attempts` (providers: Groq → Mistral → OpenRouter, all free).
+2. **Summary review** — the generated digest is critiqued by the reviewer node
+   against a rubric (accuracy, specificity, clarity, tone, formatting). If it
+   fails, the `refine` node rewrites it addressing the critique, then it is
+   reviewed again — up to `max_reviews` passes (default 2).
 
 ### Key Features
 
@@ -65,6 +75,7 @@ END
 - **SMTP notifier** — works with Gmail or any SMTP host (Ethereal for testing)
 - **Resend notifier** — switch via `NOTIFIER=resend` to send through the Resend HTTP API
 - **Evaluator-Optimizer loop** — bounded by `min(len(candidate_pool), max_attempts)`
+- **Summary review loop** — the digest is critiqued and refined against a rubric (bounded by `max_reviews`, default 2)
 - **Three loop exit paths**: PASS / FAIL_EXHAUSTED / FAIL_BUDGET (all tested)
 - **Observability** — logs model selection, candidates tried, rejection reasons
 - **Idempotency** — re-running for same day/window deduplicates
@@ -170,6 +181,7 @@ digest-agent/
 │       ├── core/               # Application core (zero vendor imports)
 │       │   ├── state.py
 │       │   ├── policy.py
+│       │   ├── text_utils.py   # Output cleaning + review verdict parsing
 │       │   ├── orchestrator.py
 │       │   └── fakes.py        # In-memory fakes for testing the core
 │       ├── adapters/
@@ -196,10 +208,12 @@ digest-agent/
 ### Definition of Done
 
 - [x] Orchestrator and ModelSelectionPolicy contain no vendor imports
-- [x] Graph is acyclic everywhere except the one designed cycle
-- [x] Cycle has proven upper bound on iterations
-- [x] All three loop exit paths (PASS / FAIL_EXHAUSTED / FAIL_BUDGET) are
-      reachable in tests and each produces a distinct, observable outcome
+- [x] Graph has exactly two bounded cycles (model selection, summary review)
+- [x] Both cycles have proven upper bounds on iterations
+- [x] All model-selection loop exit paths (PASS / FAIL_EXHAUSTED / FAIL_BUDGET)
+      are reachable in tests and each produces a distinct, observable outcome
+- [x] Summary review loop is bounded and degrades gracefully (accepts current
+      draft if the reviewer tooling fails)
 - [x] No hardcoded model ID anywhere in the codebase
 - [x] A failed model-selection loop never silently proceeds to summarize
 - [x] Swapping any one adapter (e.g. Gmail → Resend) requires touching
