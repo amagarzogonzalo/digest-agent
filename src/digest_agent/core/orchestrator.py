@@ -41,7 +41,7 @@ class Orchestrator:
         document_renderer: DocumentRendererPort,
         notifier: NotifierPort,
         max_attempts: int = 6,
-        max_reviews: int = 3,
+        max_reviews: int = 4,
     ):
         self.activity_source = activity_source
         self.llm_provider = llm_provider
@@ -226,23 +226,27 @@ class Orchestrator:
         critiques = [c for c in (state.reviewer_critique_0, state.reviewer_critique_1, state.reviewer_critique_2)
                      if c and "[reviewer failed]" not in c]
         avg = sum(scores) / max(1, sum(1 for s in scores if s))
+        passes = sum(1 for s in scores if s >= state.min_quality_score)
         merged = "\n".join("- " + c if not c.strip().startswith("-") else c for c in critiques) if critiques else ""
 
         next_count = state.review_count + 1
-        scores = [state.reviewer_score_0, state.reviewer_score_1, state.reviewer_score_2]
         got_real_review = sum(1 for s in scores if s > 0)
         decision = "refine"
         if state.error_message:
-            # A prior stage already failed - do not try to refine against broken state.
             decision = "give_up"
         elif got_real_review == 0:
-            # No reviewer could even run (rate-limited). Do not discard the draft;
-            # accept it rather than spin.
+            # No reviewer could run (rate-limited). Keep current draft.
             decision = "accept"
-        elif (avg >= state.min_quality_score and next_count >= 1) or next_count >= state.max_reviews:
+        elif next_count >= state.max_reviews:
+            # Budget exhausted: accept the best draft we have.
             decision = "accept"
-        elif avg >= state.min_quality_score:
-            decision = "accept"
+        else:
+            # Consensus: accept only when BOTH average is high AND a majority
+            # of reviewers individually pass. Otherwise keep refining.
+            if avg >= state.min_quality_score and passes >= 2:
+                decision = "accept"
+            else:
+                decision = "refine"
         return {
             "review_count": next_count,
             "review_score": round(avg, 2),
@@ -414,7 +418,7 @@ def build_orchestrator(
     document_renderer: DocumentRendererPort,
     notifier: NotifierPort,
     max_attempts: int = 6,
-    max_reviews: int = 3,
+    max_reviews: int = 4,
 ) -> Orchestrator:
     """Factory function."""
     return Orchestrator(

@@ -1,9 +1,13 @@
 """Deterministic (programmatic) summary built purely from fetched git data.
 
-This is the ground-truth section shown ABOVE the LLM summary. It requires no
-LLM call, so it is always accurate: totals, per-PR diffstats, and the most
-changed files. The LLM section builds on top of it for narrative.
+Two sections, both requiring no LLM:
+  1. Executive Snapshot - totals + per-PR diffstat.
+  2. Latest PR deep-dives - the most recent merged PRs, each listing every
+     changed file with additions/deletions and the actual diff hunks fetched
+     from git, so real integrated code is shown. Rich enough that the LLM
+     summary builds directly on it.
 """
+from datetime import datetime, timezone
 
 
 def _short_refs(commits) -> str:
@@ -15,8 +19,15 @@ def _short_refs(commits) -> str:
     return ", ".join(refs[:5]) + " (+" + str(len(refs) - 5) + " more)"
 
 
-def build_deterministic_summary(activity) -> str:
-    """Return a markdown 'executive snapshot' derived only from git data."""
+def _sort_prs(activity):
+    """Flatten all PRs across repos, merged first, most recent first (by number)."""
+    prs = [p for ra in activity for p in ra.pull_requests]
+    prs.sort(key=lambda p: (-int(p.merged), -p.number))
+    return prs
+
+
+def build_deterministic_summary(activity, deep_prs: int = 3) -> str:
+    """Return a markdown snapshot including deep dives on the latest PRs."""
     total_commits = sum(len(ra.commits) for ra in activity)
     total_prs = sum(len(ra.pull_requests) for ra in activity)
     merged_prs = sum(1 for ra in activity for p in ra.pull_requests if p.merged)
@@ -32,6 +43,9 @@ def build_deterministic_summary(activity) -> str:
         if len(all_files) > 12:
             files_txt += " (+" + str(len(all_files) - 12) + " more)"
 
+    sorted_prs = _sort_prs(activity)
+    recent = [p for p in sorted_prs if p.merged][:deep_prs]
+
     lines = [
         "## Executive Snapshot (from git data)",
         "",
@@ -42,24 +56,35 @@ def build_deterministic_summary(activity) -> str:
         "- **Files touched** (" + str(len(all_files)) + "): " + files_txt,
     ]
 
-    for ra in activity:
-        if not ra.pull_requests:
-            continue
+    # Latest merged PR deep-dives with complete file lists + diff patches.
+    lines.append("")
+    lines.append("### \u2193 Latest " + str(len(recent)) + " merged PRs — full diff detail")
+    for p in recent:
+        repo = next((ra.repo for ra in activity for x in ra.pull_requests if x.number == p.number), "?")
         lines.append("")
-        lines.append("### PR detail for " + ra.repo)
-        for p in ra.pull_requests:
-            merged = "merged " if p.merged else p.state + " "
-            files_desc = ", ".join(f.filename for f in p.files[:5])
-            if len(p.files) > 5:
-                files_desc += " (+" + str(len(p.files) - 5) + " more)"
-            stat = (
-                "  [" + str(p.changed_files) + " file(s), +" + str(p.additions) + "/-" + str(p.deletions) + "]"
-                if p.changed_files else ""
-            )
-            lines.append("- PR #" + str(p.number) + " (" + merged.strip() + "): " + p.title + stat)
-            if files_desc:
-                lines.append("    files: " + files_desc)
+        lines.append("#### PR #" + str(p.number) + " — " + p.title)
+        lines.append(
+            "Merged PR on `" + repo + "` - " + str(p.changed_files) + " file(s), "
+            "+" + str(p.additions) + "/-" + str(p.deletions) + " lines.")
+        if not p.files:
+            lines.append("- files: not available")
+        for f in p.files:
+            status = f.status
+            lines.append("- `" + f.filename + "`  (" + status + ", +" + str(f.additions) + "/-" + str(f.deletions) + ")")
+            if f.patch:
+                lines.append("  ```diff")
+                lines.append("  " + f.patch.replace("\n", "\n  "))
+                lines.append("  ```")
+
+    # Compact per-PR stat for everything else (older PRs).
+    older = [p for p in sorted_prs if p.merged and p not in recent]
+    if older:
+        lines.append("")
+        lines.append("### Other merged PRs")
+        for p in older:
+            stat = ("  [" + str(p.changed_files) + " file(s), +" + str(p.additions) + "/-" + str(p.deletions) + "]" if p.changed_files else "")
+            lines.append("- PR #" + str(p.number) + ": " + p.title + stat)
 
     lines.append("")
-    lines.append("_Produced from git data; no AI involved._")
+    lines.append("_Produced from git data; no AI involved. Diff hunks are verbatim from the repository._")
     return "\n".join(lines)

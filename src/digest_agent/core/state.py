@@ -44,7 +44,7 @@ class DigestState:
 
     # Review / refine loop state
     review_count: int = 0
-    max_reviews: int = 3
+    max_reviews: int = 4
     last_critique: str = ""
     review_decision: str = ""  # "accept" | "refine" | "give_up"
     review_score: float = 0.0  # 0-10 rubric score (committee average)

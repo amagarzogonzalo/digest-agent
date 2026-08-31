@@ -1,87 +1,118 @@
-"""Generate an SVG diagram of the digest-agent LangGraph pipeline.
+"""Generate a polished SVG diagram of the digest-agent LangGraph pipeline.
 
-The SVG is written to ``graph.svg`` in the repo root for visual reference.
+Writes ``graph.svg`` into the repo root. Nodes are grouped by pipeline
+stage with distinct colors, plus a legend and highlighted loops.
 """
 import os
 
-
 NODES = [
-    # (id, label, x, y)
-    ("fetch_github", "fetch_github", 80, 40),
-    ("select", "select_and_test_model", 80, 140),
-    ("summarize", "summarize", 80, 240),
-    ("review_0", "reviewer: detail/code", 300, 180),
-    ("review_1", "reviewer: accuracy", 300, 260),
-    ("review_2", "reviewer: structure/tone", 300, 340),
-    ("aggregate", "aggregate_review", 520, 260),
-    ("refine", "refine", 520, 140),
-    ("finalize", "finalize (prepend deterministic)", 700, 200),
-    ("render", "render_pdf", 700, 300),
-    ("notify", "send_notification", 840, 300),
-    ("fail", "handle_failure", 300, 360),
+    ("fetch",    "fetch_github (activity + diffs)", 40, 30, "data"),
+    ("select",   "select_and_test_model (model selection)", 40, 110, "data"),
+    ("summarize", "summarize (LLM narrative)", 40, 210, "gen"),
+    ("r0", "reviewer: detail", 250, 80, "review"),
+    ("r1", "reviewer: accuracy", 250, 160, "review"),
+    ("r2", "reviewer: tone", 250, 240, "review"),
+    ("agg",  "aggregate_review (consensus)", 250, 360, "review"),
+    ("refine", "refine", 480, 200, "review"),
+    ("final", "finalize (prepend deterministic)", 250, 470, "final"),
+    ("render", "render_pdf", 480, 430, "final"),
+    ("notify", "send_notification", 480, 520, "final"),
+    ("fail",   "handle_failure", 20, 330, "fail"),
 ]
 
 EDGES = [
-    ("fetch_github", "select"),
-    ("select", "summarize", "pass"),
-    ("select", "select", "continue"),
-    ("select", "fail", "fail_exhausted/budget"),
-    ("summarize", "review_0"),
-    ("summarize", "review_1"),
-    ("summarize", "review_2"),
-    ("review_0", "aggregate"),
-    ("review_1", "aggregate"),
-    ("review_2", "aggregate"),
-    ("aggregate", "finalize", "accept"),
-    ("aggregate", "refine", "refine"),
-    ("refine", "review_0"),
-    ("refine", "review_1"),
-    ("refine", "review_2"),
-    ("finalize", "render"),
-    ("render", "notify"),
-    ("notify", None),
-    ("fail", None),
+    ("fetch", "summarize", "", False),
+    ("select", "summarize", "pass", False),
+    ("select", "select", "continue", True),
+    ("select", "fail", "fail", True),
+    ("summarize", "r0", "", False),
+    ("summarize", "r1", "", False),
+    ("summarize", "r2", "", False),
+    ("r0", "agg", "", False),
+    ("r1", "agg", "", False),
+    ("r2", "agg", "", False),
+    ("agg", "final", "accept", False),
+    ("agg", "refine", "refine", True),
+    ("refine", "r0", "", True),
+    ("refine", "r1", "", True),
+    ("refine", "r2", "", True),
+    ("final", "render", "", False),
+    ("render", "notify", "", False),
 ]
 
+STAGE = {
+    "data":   ("#e1effe", "#1d4ed8"),
+    "gen":    ("#e7f6ec", "#15803d"),
+    "review": ("#fff4e5", "#b4530a"),
+    "final":  ("#f3e8fd", "#7e22ce"),
+    "fail":   ("#fde2e2", "#b91c1c"),
+}
 
-def _node_id(nid):
-    return "n" + nid.replace("-", "_")
+BW = 190
+BH = 28
 
 
-def render_svg(path: str) -> None:
-    w, h = 980, 460
-    out = ["<svg xmlns='http://www.w3.org/2000/svg' width='%d' height='%d' viewBox='0 0 %d %d'>" % (w, h, w, h)]
-    out.append("<style> text{font-family:sans-serif;font-size:11px;fill:#1f2937} .edge{stroke:#9ca3af;stroke-width:1.2;fill:none} "
-               " .lbl{font-size:9px;fill:#6b7280} .node{fill:#eef2f8;stroke:#1f3b73;stroke-width:1.5} "
-               " .fail{fill:#fde2e2;stroke:#b91c1c} .cycle{stroke:#b45309;stroke-width:1.6} </style>")
-    # edges first
-    for e in EDGES:
-        a, b = e[0], e[1]
-        lbl = e[2] if len(e) > 2 else ""
-        if b is None:
+def _esc(t):
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def render_svg(path):
+    pos = {n[0]: (n[2], n[3]) for n in NODES}
+    W, H = 720, 580
+    out = [f"<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}' viewBox='0 0 {W} {H}'>"]
+    out.append(
+        "<style> text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#111827;font-size:11px} "
+        ".sub{font-size:9px;fill:#374151} "
+        ".lbl{font-size:9px;fill:#6b7280;font-style:italic} "
+        ".edge{stroke:#9ca3af;stroke-width:1.3;fill:none} "
+        ".cycle{stroke:#dc2626;stroke-width:1.6;stroke-dasharray:5,3} "
+        ".legend{font-size:10px;fill:#111827} "
+        "</style>")
+
+    # edges
+    for a, b, label, is_cycle in EDGES:
+        x1, y1 = pos[a]
+        x2, y2 = pos[b]
+        cls = "edge cycle" if is_cycle else "edge"
+        xa, ya = x1 + BW, y1 + BH // 2
+        xb, yb = x2, y2 + BH // 2
+        if a == b:  # self loop on select
+            out.append(
+                f"<path class='cycle' d='M {xa} {ya} C {xa+40} {ya-30}, {xa+40} {ya-30}, {xa} {ya-28}' />")
             continue
-        pos = {n[0]: (n[2], n[3]) for n in NODES}
-        (x1, y1), (x2, y2) = pos[a], pos[b]
-        cls = "edge cycle" if (a == b or (a == "refine" and b in ("review_0", "review_1", "review_2"))) else "edge"
-        out.append("<line class='%s' x1='%d' y1='%d' x2='%d' y2='%d' marker-end='url(#a)'/>" % (cls, x1 + 70, y1 + 18, x2, y2 + 2))
-        if lbl:
-            mx, my = (x1 + x2) // 2, (y1 + y2) // 2
-            out.append("<text class='lbl' x='%d' y='%d'>%s</text>" % (mx, my, lbl))
+        out.append(f"<line class='{cls}' x1='{xa}' y1='{ya}' x2='{xb}' y2='{yb}' />")
+        if label:
+            mx, my = (xa + xb) // 2, (ya + yb) // 2 - 4
+            out.append(f"<text class='lbl' x='{mx}' y='{my}' text-anchor='middle'>{label}</text>")
+
     # nodes
-    for n in NODES:
-        nid, label, x, y = n
-        cls = "node fail" if nid == "fail" else "node"
-        out.append("<rect class='%s' id='%s' x='%d' y='%d' width='140' height='36' rx='8'/>" % (cls, nid, x, y))
-        out.append("<text x='%d' y='%d' text-anchor='middle'>%s</text>" % (x + 70, y + 22, label))
-    # marker
-    out.append("<defs><marker id='a' markerWidth='8' markerHeight='8' refX='7' refY='3' orient='auto'>"
-               "<path d='M0,0 L7,3 L0,6 z' fill='#9ca3af'/></marker></defs>")
+    for nid, label, x, y, stage in NODES:
+        bg, bd = STAGE[stage]
+        out.append(f"<rect x='{x}' y='{y}' width='{BW}' height='{BH}' rx='9' fill='{bg}' "
+                   f"stroke='{bd}' stroke-width='1.5'/>")
+        out.append(f"<text x='{x + BW // 2}' y='{y + 18}' text-anchor='middle'>{_esc(label)}</text>")
+
+    # legend
+    lx, ly = 560, 30
+    out.append("<g class='legend'>")
+    for i, (name, (bg, bd)) in enumerate(STAGE.items()):
+        yy = ly + i * 22
+        out.append(f"<rect x='{lx}' y='{yy}' width='20' height='15' rx='4' fill='{bg}' stroke='{bd}'/>")
+        out.append(f"<text x='{lx + 30}' y='{yy + 13}'>{name}</text>")
+    out.append("<text x='560' y='160' class='lbl'>-- dashed = loop</text>")
+    out.append("</g>")
+
     out.append("</svg>")
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(out))
+    return path
 
 
-if __name__ == "__main__":
+def main():
     root = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "graph.svg")
     render_svg(root)
     print("wrote", root)
+
+
+if __name__ == "__main__":
+    main()
