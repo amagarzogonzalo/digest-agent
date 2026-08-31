@@ -26,6 +26,13 @@ def _sort_prs(activity):
     return prs
 
 
+def latest_merged_prs(activity, n: int = 3) -> list:
+    """Return the n most-recent MERGED pull requests across all repos, newest first."""
+    merged = [p for ra in activity for p in ra.pull_requests if p.merged]
+    merged.sort(key=lambda p: p.number, reverse=True)
+    return merged[:max(0, n)]
+
+
 def build_deterministic_summary(activity, deep_prs: int = 3) -> str:
     """Return a markdown snapshot including deep dives on the latest PRs."""
     total_commits = sum(len(ra.commits) for ra in activity)

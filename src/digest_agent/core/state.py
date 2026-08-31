@@ -31,8 +31,19 @@ class DigestState:
     pdf_path: str = ""
     email_sent: bool = False
 
+    # Report identity (UID, version, timestamp) shown in PDF + email subject
+    report_uid: str = ""
+    report_version: str = "1.0.0"
+    report_generated_at: str = ""
+
     # Deterministic (git-only) snapshot shown above the LLM summary
     deterministic_summary: str = ""
+
+    # Per-PR deep-dive worker outputs (orchestrator-workers on the latest PRs)
+    pr_dive_0: str = ""
+    pr_dive_1: str = ""
+    pr_dive_2: str = ""
+    overall_narrative: str = ""
 
     # Review committee state (3 parallel reviewers use distinct keys to avoid reducers)
     reviewer_critique_0: str = ""

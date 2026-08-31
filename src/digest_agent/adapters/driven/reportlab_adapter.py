@@ -125,11 +125,7 @@ class ReportLabAdapter(DocumentRendererPort):
                 bullets.clear()
 
         def flush_code():
-            if code:
-                story.append(Spacer(1, 2))
-                story.append(_code_block(code, st["code"]))
-                story.append(Spacer(1, 2))
-                code.clear()
+            _flush_code_block(story, st, code)
 
         for raw in summary.splitlines():
             line = raw.strip()
@@ -171,13 +167,43 @@ def _esc(text: str) -> str:
 
 
 def _code_block(lines, style):
-    """Render code as a splittable boxed paragraph (safe for large hunks)."""
-    text = "<br/>".join(_esc(l) for l in lines)
-    return Paragraph(text, _boxstyle(style))
+    """Render code as splittable, per-line colored paragraphs (diff-aware).
 
-
-def _boxstyle(base):
-    """Return a paragraph-style variant that carries a light background."""
+    Added lines (+), removed (-), and hunk headers (@@) get distinct colors;
+    other code lines stay monochrome with a light background.
+    """
     from reportlab.lib.styles import ParagraphStyle
-    return ParagraphStyle("CodeBox", parent=base, backColor=CODE_BG, borderPadding=6,
-                          borderColor=BOARD, borderWidth=0.5, spaceBefore=0, spaceAfter=0)
+    out = []
+    for raw in lines:
+        line = raw.rstrip("\n")
+        if line.startswith("+") and not line.startswith("+++ "):
+            st = ParagraphStyle("add", parent=style,
+                                textColor=colors.HexColor("#14532d"),
+                                backColor=colors.HexColor("#ecfdf5"))
+        elif line.startswith("-") and not line.startswith("--- "):
+            st = ParagraphStyle("del", parent=style,
+                                textColor=colors.HexColor("#7f1d1d"),
+                                backColor=colors.HexColor("#fdecec"))
+        elif line.strip().startswith("@@"):
+            st = ParagraphStyle("hdr", parent=style,
+                                textColor=colors.HexColor("#7c3aed"),
+                                backColor=colors.HexColor("#f5f3ff"))
+        else:
+            st = style
+        out.append(Paragraph(_esc(line), st))
+    return out
+
+
+def _esc(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _flush_code_block(story, st, code):
+    """Emit the current code buffer as colored, splittable code paragraphs."""
+    if not code:
+        return
+    story.append(Spacer(1, 3))
+    for para in _code_block(code, st["code"]):
+        story.append(para)
+    story.append(Spacer(1, 3))
+    code.clear()

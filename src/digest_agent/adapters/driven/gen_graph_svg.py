@@ -6,36 +6,40 @@ stage with distinct colors, plus a legend and highlighted loops.
 import os
 
 NODES = [
-    ("fetch",    "fetch_github (activity + diffs)", 40, 30, "data"),
-    ("select",   "select_and_test_model (model selection)", 40, 110, "data"),
-    ("summarize", "summarize (LLM narrative)", 40, 210, "gen"),
-    ("r0", "reviewer: detail", 250, 80, "review"),
-    ("r1", "reviewer: accuracy", 250, 160, "review"),
-    ("r2", "reviewer: tone", 250, 240, "review"),
-    ("agg",  "aggregate_review (consensus)", 250, 360, "review"),
-    ("refine", "refine", 480, 200, "review"),
-    ("final", "finalize (prepend deterministic)", 250, 470, "final"),
-    ("render", "render_pdf", 480, 430, "final"),
-    ("notify", "send_notification", 480, 520, "final"),
-    ("fail",   "handle_failure", 20, 330, "fail"),
+    ("fetch",    "fetch_github (activity + diffs)", 20, 30, "data"),
+    ("meta",     "set_metadata (uid/version)", 20, 95, "data"),
+    ("select",   "select_and_test_model", 20, 160, "data"),
+    ("dive0",    "pr_dive_0 (deep dive)", 260, 40, "gen"),
+    ("dive1",    "pr_dive_1 (deep dive)", 260, 105, "gen"),
+    ("dive2",    "pr_dive_2 (deep dive)", 260, 170, "gen"),
+    ("assemble", "assemble (merge + overall)", 260, 260, "gen"),
+    ("r0", "reviewer: detail", 510, 40, "review"),
+    ("r1", "reviewer: accuracy", 510, 120, "review"),
+    ("r2", "reviewer: tone", 510, 200, "review"),
+    ("agg",  "aggregate_review", 510, 300, "review"),
+    ("refine", "refine", 510, 390, "review"),
+    ("final", "finalize (prepend deterministic)", 710, 120, "final"),
+    ("render", "render_pdf", 710, 210, "final"),
+    ("notify", "send_notification", 710, 300, "final"),
+    ("fail",   "handle_failure", 20, 290, "fail"),
 ]
 
 EDGES = [
-    ("fetch", "summarize", "", False),
-    ("select", "summarize", "pass", False),
+    ("fetch", "meta", "", False),
+    ("meta", "select", "", False),
+    ("select", "dive0", "pass", False),
     ("select", "select", "continue", True),
     ("select", "fail", "fail", True),
-    ("summarize", "r0", "", False),
-    ("summarize", "r1", "", False),
-    ("summarize", "r2", "", False),
-    ("r0", "agg", "", False),
-    ("r1", "agg", "", False),
+    ("dive0", "dive1", "", False),
+    ("dive1", "dive2", "", False),
+    ("dive2", "assemble", "", False),
+    ("assemble", "r0", "", False),
+    ("r0", "r1", "", False),
+    ("r1", "r2", "", False),
     ("r2", "agg", "", False),
     ("agg", "final", "accept", False),
     ("agg", "refine", "refine", True),
     ("refine", "r0", "", True),
-    ("refine", "r1", "", True),
-    ("refine", "r2", "", True),
     ("final", "render", "", False),
     ("render", "notify", "", False),
 ]
@@ -58,7 +62,7 @@ def _esc(t):
 
 def render_svg(path):
     pos = {n[0]: (n[2], n[3]) for n in NODES}
-    W, H = 720, 580
+    W, H = 960, 470
     out = [f"<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}' viewBox='0 0 {W} {H}'>"]
     out.append(
         "<style> text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#111827;font-size:11px} "
@@ -93,13 +97,13 @@ def render_svg(path):
         out.append(f"<text x='{x + BW // 2}' y='{y + 18}' text-anchor='middle'>{_esc(label)}</text>")
 
     # legend
-    lx, ly = 560, 30
+    lx, ly = 760, 60
     out.append("<g class='legend'>")
     for i, (name, (bg, bd)) in enumerate(STAGE.items()):
         yy = ly + i * 22
         out.append(f"<rect x='{lx}' y='{yy}' width='20' height='15' rx='4' fill='{bg}' stroke='{bd}'/>")
         out.append(f"<text x='{lx + 30}' y='{yy + 13}'>{name}</text>")
-    out.append("<text x='560' y='160' class='lbl'>-- dashed = loop</text>")
+    out.append("<text x='760' y='200' class='lbl'>-- dashed = loop</text>")
     out.append("</g>")
 
     out.append("</svg>")
