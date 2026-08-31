@@ -2,7 +2,11 @@ name: Daily GitHub Digest
 
 on:
   schedule:
-    - cron: "0 7 * * *"   # 07:00 UTC daily -- adjust to your timezone
+    # 07:00 Europe/Amsterdam. Amsterdam = UTC+2 in summer (CEST) = 05:00 UTC,
+    # UTC+1 in winter (CET) = 06:00 UTC. This cron uses 05:00 UTC so it fires
+    # at 07:00 Amsterdam during summer. Refine to a second cron (06:00 UTC)
+    # if you also want exact 07:00 in winter.
+    - cron: "0 5 * * *"
   workflow_dispatch: {}     # lets you trigger it manually from the Actions tab
 
 jobs:
