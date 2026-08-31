@@ -1,0 +1,50 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='980' height='460' viewBox='0 0 980 460'>
+<style> text{font-family:sans-serif;font-size:11px;fill:#1f2937} .edge{stroke:#9ca3af;stroke-width:1.2;fill:none}  .lbl{font-size:9px;fill:#6b7280} .node{fill:#eef2f8;stroke:#1f3b73;stroke-width:1.5}  .fail{fill:#fde2e2;stroke:#b91c1c} .cycle{stroke:#b45309;stroke-width:1.6} </style>
+<line class='edge' x1='150' y1='58' x2='80' y2='142' marker-end='url(#a)'/>
+<line class='edge' x1='150' y1='158' x2='80' y2='242' marker-end='url(#a)'/>
+<text class='lbl' x='80' y='190'>pass</text>
+<line class='edge cycle' x1='150' y1='158' x2='80' y2='142' marker-end='url(#a)'/>
+<text class='lbl' x='80' y='140'>continue</text>
+<line class='edge' x1='150' y1='158' x2='300' y2='362' marker-end='url(#a)'/>
+<text class='lbl' x='190' y='250'>fail_exhausted/budget</text>
+<line class='edge' x1='150' y1='258' x2='300' y2='182' marker-end='url(#a)'/>
+<line class='edge' x1='150' y1='258' x2='300' y2='262' marker-end='url(#a)'/>
+<line class='edge' x1='150' y1='258' x2='300' y2='342' marker-end='url(#a)'/>
+<line class='edge' x1='370' y1='198' x2='520' y2='262' marker-end='url(#a)'/>
+<line class='edge' x1='370' y1='278' x2='520' y2='262' marker-end='url(#a)'/>
+<line class='edge' x1='370' y1='358' x2='520' y2='262' marker-end='url(#a)'/>
+<line class='edge' x1='590' y1='278' x2='700' y2='202' marker-end='url(#a)'/>
+<text class='lbl' x='610' y='230'>accept</text>
+<line class='edge' x1='590' y1='278' x2='520' y2='142' marker-end='url(#a)'/>
+<text class='lbl' x='520' y='200'>refine</text>
+<line class='edge cycle' x1='590' y1='158' x2='300' y2='182' marker-end='url(#a)'/>
+<line class='edge cycle' x1='590' y1='158' x2='300' y2='262' marker-end='url(#a)'/>
+<line class='edge cycle' x1='590' y1='158' x2='300' y2='342' marker-end='url(#a)'/>
+<line class='edge' x1='770' y1='218' x2='700' y2='302' marker-end='url(#a)'/>
+<line class='edge' x1='770' y1='318' x2='840' y2='302' marker-end='url(#a)'/>
+<rect class='node' id='fetch_github' x='80' y='40' width='140' height='36' rx='8'/>
+<text x='150' y='62' text-anchor='middle'>fetch_github</text>
+<rect class='node' id='select' x='80' y='140' width='140' height='36' rx='8'/>
+<text x='150' y='162' text-anchor='middle'>select_and_test_model</text>
+<rect class='node' id='summarize' x='80' y='240' width='140' height='36' rx='8'/>
+<text x='150' y='262' text-anchor='middle'>summarize</text>
+<rect class='node' id='review_0' x='300' y='180' width='140' height='36' rx='8'/>
+<text x='370' y='202' text-anchor='middle'>reviewer: detail/code</text>
+<rect class='node' id='review_1' x='300' y='260' width='140' height='36' rx='8'/>
+<text x='370' y='282' text-anchor='middle'>reviewer: accuracy</text>
+<rect class='node' id='review_2' x='300' y='340' width='140' height='36' rx='8'/>
+<text x='370' y='362' text-anchor='middle'>reviewer: structure/tone</text>
+<rect class='node' id='aggregate' x='520' y='260' width='140' height='36' rx='8'/>
+<text x='590' y='282' text-anchor='middle'>aggregate_review</text>
+<rect class='node' id='refine' x='520' y='140' width='140' height='36' rx='8'/>
+<text x='590' y='162' text-anchor='middle'>refine</text>
+<rect class='node' id='finalize' x='700' y='200' width='140' height='36' rx='8'/>
+<text x='770' y='222' text-anchor='middle'>finalize (prepend deterministic)</text>
+<rect class='node' id='render' x='700' y='300' width='140' height='36' rx='8'/>
+<text x='770' y='322' text-anchor='middle'>render_pdf</text>
+<rect class='node' id='notify' x='840' y='300' width='140' height='36' rx='8'/>
+<text x='910' y='322' text-anchor='middle'>send_notification</text>
+<rect class='node fail' id='fail' x='300' y='360' width='140' height='36' rx='8'/>
+<text x='370' y='382' text-anchor='middle'>handle_failure</text>
+<defs><marker id='a' markerWidth='8' markerHeight='8' refX='7' refY='3' orient='auto'><path d='M0,0 L7,3 L0,6 z' fill='#9ca3af'/></marker></defs>
+</svg>

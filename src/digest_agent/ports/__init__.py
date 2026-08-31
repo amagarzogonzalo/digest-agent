@@ -4,7 +4,14 @@ These abstract contracts define what the application core depends on.
 Adapters implement these ports. The core never imports adapters or vendor SDKs.
 """
 
-from .activity_source import ActivitySourcePort, RepoActivity, Commit, PullRequest, ActivityFetchError
+from .activity_source import (
+    ActivitySourcePort,
+    RepoActivity,
+    Commit,
+    PullRequest,
+    FileChange,
+    ActivityFetchError,
+)
 from .llm_provider import LLMProviderPort, ModelId, TestResult, CompletionError
 from .document_renderer import DocumentRendererPort, RenderError
 from .notifier import NotifierPort, NotificationError
@@ -14,6 +21,7 @@ __all__ = [
     "RepoActivity",
     "Commit",
     "PullRequest",
+    "FileChange",
     "ActivityFetchError",
     "LLMProviderPort",
     "ModelId",

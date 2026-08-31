@@ -31,12 +31,23 @@ class DigestState:
     pdf_path: str = ""
     email_sent: bool = False
 
+    # Deterministic (git-only) snapshot shown above the LLM summary
+    deterministic_summary: str = ""
+
+    # Review committee state (3 parallel reviewers use distinct keys to avoid reducers)
+    reviewer_critique_0: str = ""
+    reviewer_critique_1: str = ""
+    reviewer_critique_2: str = ""
+    reviewer_score_0: float = 0.0
+    reviewer_score_1: float = 0.0
+    reviewer_score_2: float = 0.0
+
     # Review / refine loop state
     review_count: int = 0
     max_reviews: int = 3
     last_critique: str = ""
     review_decision: str = ""  # "accept" | "refine" | "give_up"
-    review_score: float = 0.0  # 0-10 rubric score from the latest review
+    review_score: float = 0.0  # 0-10 rubric score (committee average)
     min_quality_score: float = 7.0  # below this, refine (until budget)
 
     # Terminal state
