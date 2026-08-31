@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# UV
+.ufile/
+
+# PyProject / PIP
+*.egg-info/
+dist/
+build/
+*.egg-info/
+
+# pytest
+.pytest_cache/
+.tox/
+
+# Environment variables
+.env
+
+# LLM credentials (never commit these!)
+openrouter_keys/
+gmail_credentials/
+
+# Docker
+.docker-compose/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.8mo
+
+# Operating System
+.DS_Store
+```
