@@ -85,10 +85,13 @@ class ReportLabAdapter(DocumentRendererPort):
         canvas.restoreState()
 
     def render(self, summary: str, extra_meta: dict | None = None) -> str:
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        out_path = os.path.join(self._output_dir(), f"github_digest_{date_str}.pdf")
-        st = self._styles()
         meta = extra_meta or {}
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        stamp = meta.get("uid", "") or meta.get("generated_at", "")[:10] or date_str
+        # Unique filename per report using its UID stamp to avoid collisions.
+        stem = "github_digest_" + date_str + ("_" + stamp if stamp and stamp != date_str else "")
+        out_path = os.path.join(self._output_dir(), stem + ".pdf")
+        st = self._styles()
 
         doc = SimpleDocTemplate(
             out_path, pagesize=LETTER,
