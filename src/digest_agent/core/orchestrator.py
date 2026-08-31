@@ -205,16 +205,31 @@ class Orchestrator:
         prompt = self._build_review_prompt(state.summary, state.activity, state.review_count, state.max_reviews)
         try:
             response = self.llm_provider.complete(state.selected_model, prompt)
-            accepted, critique = parse_review_verdict(response)
-            updates: dict = {"review_count": state.review_count + 1, "last_critique": critique}
-            if accepted or state.review_count >= state.max_reviews:
-                updates["review_decision"] = "accept" if accepted else "give_up"
+            accepted, critique, score = parse_review_verdict(response)
+            next_count = state.review_count + 1
+            updates: dict = {
+                "review_count": next_count,
+                "last_critique": critique,
+                "review_score": score or 0.0,
+            }
+            # Accept only if the reviewer PASSES AND the draft meets the quality bar,
+            # OR we have exhausted the review budget (degrade gracefully).
+            if (accepted and score >= state.min_quality_score) or next_count >= state.max_reviews:
+                updates["review_decision"] = "accept"
+            elif accepted:
+                # passed but under the quality bar -> push one more refine if budget remains
+                updates["review_decision"] = "refine"
             else:
                 updates["review_decision"] = "refine"
             return updates
         except Exception as e:
             # If review tooling fails, do not block the pipeline - accept what we have.
-            return {"review_count": state.review_count + 1, "review_decision": "accept", "last_critique": ""}
+            return {
+                "review_count": state.review_count + 1,
+                "review_decision": "accept",
+                "last_critique": "",
+                "review_score": 0.0,
+            }
 
     def _refine_node(self, state: DigestState) -> dict:
         """Rewrite the summary addressing the reviewer's critique."""
@@ -269,71 +284,92 @@ class Orchestrator:
         }
 
     def _build_summarization_prompt(self, activity: list) -> str:
-        """Build the summarization prompt from activity data."""
-        lines = []
-        for repo_activity in activity:
-            lines.append(f"### {repo_activity.repo}")
-            for commit in repo_activity.commits:
-                lines.append(f"- commit {commit.sha} by {commit.author}: {commit.message}")
-            for pr in repo_activity.pull_requests:
-                status = "merged" if pr.merged else pr.state
-                lines.append(f"- PR #{pr.number} ({status}): {pr.title}")
-        raw_activity = "\n".join(lines)
+        """Build a prompt that demands a DEEP, technical, code-bearing digest."""
+        grouped = self._group_activity(activity)
+        raw_activity = "\n".join(grouped)
 
         return (
-            "You are a senior technical editor producing a concise daily digest "
-            "of engineering activity. Below is raw git activity (commits and pull "
-            "requests) across one or more repos for the lookback window.\n\n"
-            "Rules:\n"
-            "- Use '#' for the single main title (the repo name).\n"
-            "- Use '##' for each repo section, then '-' bullet points.\n"
-            "- For each repo with activity, give a one-line headline of what "
-            "happened, then 2-4 specific bullet points in plain, concrete English "
-            "(name the repo, PR number, or commit topic; do NOT just restate raw "
-            "commit messages verbatim).\n"
-            "- Skip repos with no activity.\n"
-            "- Be specific, factual, and jargon-lean. No hype, no fluff, no "
-            "'Overall a busy day' filler.\n"
-            "- End with a single one-sentence overall summary.\n"
-            "- No preamble or explanation; output the markdown digest only.\n\n"
+            "You are a meticulous senior engineer writing a DETAILED daily engineering "
+            "digest from raw git activity. The reader is a competent engineer who needs "
+            "full context — NOT a fluffy executive summary.\n\n"
+            "MANDATORY requirements:\n"
+            "- Start with '# ' + repo name (one title only).\n"
+            "- Organize into '## ' sections by area (e.g. '## Platform', '## Evaluation', "
+            "'## Training', '## Frontend', '## Docs', '## CI/CD').\n"
+            "- Under each area, write GROUPED, substantive bullets. Each bullet: state the "
+            "intent, the affected files/paths, the key APIs/functions, the PR or commit ref, "
+            "the tradeoff/risk, and ONE honest limitation or follow-up.\n"
+            "- For any significant new capability, include a SHORT real code or config "
+            "snippet inside a ``` block showing the core call, signature, or flag. "
+            "If you did NOT see the exact code in the activity, mark the snippet as "
+            "an illustrative excerpt (label it '// illustrative — verify against source'). "
+            "NEVER present inferred code as if it were the verbatim repo source.\n"
+            "- Reference concrete identifiers verbatim: PR #N, sha/refs, file paths, "
+            "function names, config keys, CLI flags.\n"
+            "- Prefer depth and specificity over terseness. 4-8 bullets per area is fine.\n"
+            "- Do not invent facts. If a detail is unknown, say 'not specified'.\n"
+            "- End with a 2-3 sentence overall summary capturing direction.\n"
+            "- Output only the markdown digest; no preamble.\n\n"
+            "RAW ACTIVITY:\n"
             f"{raw_activity}"
         )
 
+    def _group_activity(self, activity: list) -> list[str]:
+        """Render activity into one string per repo (already grouped by repo)."""
+        lines = []
+        for repo_activity in activity:
+            lines.append(f"### repo {repo_activity.repo}")
+            for pr in repo_activity.pull_requests:
+                status = "merged/closed" if pr.merged else pr.state
+                lines.append(f"- PR #{pr.number} ({status}): {pr.title}")
+            for commit in repo_activity.commits:
+                lines.append(f"- commit {commit.sha} by {commit.author}: {commit.message}")
+        return lines
+
     def _build_review_prompt(self, summary: str, activity: list, review_count: int, max_reviews: int) -> str:
-        """Build a prompt that critiques the digest against a rubric."""
+        """Build a prompt that SCORES the digest on a strict detail rubric."""
         return (
-            "You are a meticulous chief reviewer. Assess the following daily digest "
-            "against these criteria and give a verdict.\n\n"
-            "Criteria:\n"
-            "1. Accuracy: everything is grounded in the activity; no invented facts.\n"
-            "2. Specificity: names repos, PR numbers, or concrete changes (not "
-            "vague filler).\n"
-            "3. Clarity & structure: single '#' title, '##' per repo, '-' bullets,\n"
-            "4. Tone: professional, factual, no hype, no 'busy day' filler.\n"
-            "5. Formatting: short, skimmable, no preamble, no duplicated title.\n\n"
-            f"Digest:\n{summary}\n\n"
-            "If it already meets these criteria well, respond with exactly:\n"
-            "VERDICT: PASS\n\n"
-            "Otherwise respond with:\n"
-            "VERDICT: REVISE\n"
-            "Followed by a short, actionable critique (2-4 bullets) listing the "
-            "specific things to fix.\n\n"
+            "You are a demanding engineering editor. Grade the following digest against this "
+            "rubric (0-10 each), then give a verdict.\n\n"
+            "RUBRIC:\n"
+            "1. Detail & specificity (does it name files, functions, PRs, config keys, CLI flags?) "
+            "HIGH impact.\n"
+            "2. Code substance (does it include real ```code snippets``` for key changes?)."
+            "3. Coverage (does it address ALL areas: platform, eval, training, frontend, docs, CI?)."
+            "4. Technical correctness & groundedness (no invented facts).\n"
+            "5. Structure (one '# ' title, '## ' sections, markdown bullets).\n"
+            "6. Tone: professional, concrete, no hype/filler.\n\n"
+            f"DIGEST:\n{summary}\n\n"
+            "Respond with EXACTLY this format:\n"
+            "SCORE: <0-10 overall>\n"
+            "VERDICT: PASS|REVISE\n"
+            "CRITIQUE:\n- <actionable bullets: what specific detail/code/coverage to add>\n\n"
+            "PASS only if score >= 8 AND the digest is genuinely detailed with code and "
+            "concrete identifiers. Otherwise REVISE with precise, actionable guidance.\n\n"
             f"(review {review_count+1}/{max_reviews})"
         )
 
     def _build_refine_prompt(self, summary: str, critique: str, activity: list) -> str:
-        """Build a prompt that rewrites the digest to address critique."""
+        """Build a prompt that rewrites the digest to add depth, specificity and code."""
         return (
-            "You are a senior technical editor. Rewrite the following daily digest "
-            "to address the reviewer's feedback.\n\n"
-            f"Reviewer feedback:\n{critique}\n\n"
-            "Rules (keep these strictly):\n"
-            "- '#' for the main title (repo name).\n"
-            "- '##' per repo section, '-' bullet points.\n"
-            "- Specific, factual, plain English; no hype or filler.\n"
-            "- One one-sentence overall summary at the end.\n"
-            "- Output only the rewritten digest, no preamble.\n\n"
-            f"Current digest to improve:\n{summary}"
+            "You are a senior engineering editor. REWRITE the digest below to fully address "
+            "the reviewer's critique and make it DETAILED and technically rich.\n\n"
+            f"REVIEWER CRITIQUE:\n{critique}\n\n"
+            "While rewriting, HARD REQUIREMENTS:\n"
+            "- Keep one '# ' title, '## ' area sections, markdown bullets.\n"
+            "- ADD the specific identifiers named in the critique: file paths, function "
+            "names, PR numbers, config keys, CLI flags.\n"
+            "- EXPAND each area with more substance — intent, affected files, key APIs, "
+            "tradeoffs/risks, and a follow-up.\n"
+            "- INCLUDE short real ```code``` blocks for any new capability (core call, "
+            "flag, or config excerpt). If the exact code is not in the activity, label it "
+            "'// illustrative — verify against source' and do not claim it is verbatim.\n"
+            "- Cover ALL areas present in the raw activity.\n"
+            "- Be concrete, grounded, and professional; no fluff.\n"
+            "- Output only the rewritten markdown digest.\n\n"
+            f"CURRENT DIGEST:\n{summary}\n\n"
+            "RAW ACTIVITY (use this — it is the source of ground truth):\n"
+            f"{self._group_activity(activity)}"
         )
 
 

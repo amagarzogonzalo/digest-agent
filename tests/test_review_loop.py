@@ -22,13 +22,13 @@ class RevisingLLM(FakeLLMProvider):
         self.review_calls = 0
 
     def complete(self, model_id, prompt):
-        if "VERDICT:" in prompt:
+        if "VERDICT:" in prompt or "RUBRIC" in prompt:
             self.review_calls += 1
             if self.review_calls == 1:
-                return "VERDICT: REVISE\n- be more specific about PR numbers\n- remove the duplicated title"
-            return "VERDICT: PASS"
-        if "improve" in prompt and "Current digest" in prompt:
-            return "# owner/repo1\n\n## owner/repo1\n- Fixed per reviewer: added PR #1 detail."
+                return "SCORE: 5\nVERDICT: REVISE\nCRITIQUE:\n- add PR #1 detail\n- add a code snippet"
+            return "SCORE: 9\nVERDICT: PASS\nCRITIQUE: none"
+        if "REWRITE the digest" in prompt or ("CURRENT DIGEST" in prompt and "REVIEWER CRITIQUE" in prompt):
+            return "# owner/repo1\n\n## owner/repo1\n- Fixed per reviewer: added PR #1 detail.\n```python\nx=1\n```"
         return super().complete(model_id, prompt)
 
 
@@ -75,15 +75,18 @@ class TestReviewLoop:
 
 class TestParseReviewVerdict:
     def test_pass(self):
-        accepted, critique = parse_review_verdict("VERDICT: PASS")
+        accepted, critique, score = parse_review_verdict("SCORE: 9\nVERDICT: PASS")
         assert accepted is True
         assert critique == ""
+        assert score == 9
 
     def test_revise(self):
-        accepted, critique = parse_review_verdict("VERDICT: REVISE\n- add details")
+        accepted, critique, score = parse_review_verdict("SCORE: 5\nVERDICT: REVISE\nCRITIQUE:\n- add details")
         assert accepted is False
         assert "add details" in critique
+        assert score == 5
 
-    def test_fallback_without_flag(self):
-        accepted, _ = parse_review_verdict("Looks good, no issues here.")
+    def test_high_score_passes_even_without_flag(self):
+        accepted, _, score = parse_review_verdict("SCORE: 8.5\nVERDICT: PASS")
         assert accepted is True
+        assert score == 8.5

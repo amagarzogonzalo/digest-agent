@@ -26,8 +26,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DIGEST_GH_TOKEN }}
           GITHUB_REPOS: ${{ vars.GITHUB_REPOS }}
           LOOKBACK_DAYS: ${{ vars.LOOKBACK_DAYS || '1' }}
-          # Provider fallback chain (Groq -> Mistral -> OpenRouter).
+          # Provider fallback chain (Gemini -> OpenRouter -> Groq -> Mistral).
           # Only providers with a key configured are used; all are free.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

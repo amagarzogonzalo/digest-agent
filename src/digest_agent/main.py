@@ -17,6 +17,7 @@ from digest_agent.adapters.driven.github_adapter import GitHubAdapter
 from digest_agent.adapters.driven.openrouter_adapter import OpenRouterAdapter
 from digest_agent.adapters.driven.groq_adapter import GroqAdapter
 from digest_agent.adapters.driven.mistral_adapter import MistralAdapter
+from digest_agent.adapters.driven.gemini_adapter import GeminiAdapter
 from digest_agent.adapters.driven.fallback_provider import FallbackLLMProvider
 from digest_agent.adapters.driven.reportlab_adapter import ReportLabAdapter
 from digest_agent.adapters.driven.gmail_adapter import GmailAdapter
@@ -27,24 +28,34 @@ from digest_agent.ports import LLMProviderPort, NotifierPort
 
 
 def build_llm_provider() -> LLMProviderPort:
-    """Build a fallback LLM provider that tries Groq, then Mistral, then
-    OpenRouter. Providers without a configured API key are skipped."""
-    openrouter_api_key = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPEN_ROUTER_API_KEY", "")
+    """Build a curated, ranked set of free LLM providers.
+
+    Order matters: the chain tests candidates and uses the FIRST that passes,
+    so the most capable free models come first. Providers without a configured
+    key are skipped. Capability order here is roughly:
+      1) Gemini (AI Studio)      - strong, detailed
+      2) OpenRouter free models  - decent, varied
+      3) Groq / Mistral          - weaker but reliable fallbacks
+    """
     groq_key = os.environ.get("GROQ_API_KEY", "")
     mistral_key = os.environ.get("MISTRAL_API_KEY", "")
+    openrouter_key = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPEN_ROUTER_API_KEY", "")
+    gemini_key = os.environ.get("GEMINI_API_KEY", "")
 
     providers = []
+    if gemini_key:
+        providers.append(GeminiAdapter(api_key=gemini_key))
+    if openrouter_key:
+        providers.append(OpenRouterAdapter(api_key=openrouter_key))
     if groq_key:
         providers.append(GroqAdapter(api_key=groq_key))
     if mistral_key:
         providers.append(MistralAdapter(api_key=mistral_key))
-    if openrouter_api_key:
-        providers.append(OpenRouterAdapter(api_key=openrouter_api_key))
 
     if not providers:
         raise ValueError(
-            "No LLM provider configured. Set one of GROQ_API_KEY, "
-            "MISTRAL_API_KEY, or OPENROUTER_API_KEY."
+            "No LLM provider configured. Set one of GEMINI_API_KEY, "
+            "OPENROUTER_API_KEY, GROQ_API_KEY, or MISTRAL_API_KEY."
         )
     return FallbackLLMProvider(providers)
 
@@ -77,7 +88,7 @@ def main():
     if not all([github_token, github_repos]):
         print("Error: Missing required environment variables.")
         print("Required: GITHUB_TOKEN, GITHUB_REPOS")
-        print("Optional: GROQ_API_KEY, MISTRAL_API_KEY, OPENROUTER_API_KEY, GMAIL_ADDRESS, RECIPIENT_EMAIL")
+        print("Optional: GEMINI_API_KEY, OPENROUTER_API_KEY, GROQ_API_KEY, MISTRAL_API_KEY, RECIPIENT_EMAIL")
         return
 
     # Create the driven adapters

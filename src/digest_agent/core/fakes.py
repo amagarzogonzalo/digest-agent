@@ -55,9 +55,9 @@ class FakeLLMProvider(LLMProviderPort):
 
     def complete(self, model_id: ModelId, prompt: str) -> str:
         self.complete_called_with.append((model_id, prompt))
-        if "VERDICT:" in prompt:
+        if "VERDICT:" in prompt or "RUBRIC" in prompt:
             # Reviewer prompt -> pass by default so tests don't loop.
-            return "VERDICT: PASS"
+            return "SCORE: 9\nVERDICT: PASS\nCRITIQUE: none"
         if model_id in self._completions:
             return self._completions[model_id]
         return f"Summary from {model_id}"

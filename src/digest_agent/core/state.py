@@ -33,9 +33,11 @@ class DigestState:
 
     # Review / refine loop state
     review_count: int = 0
-    max_reviews: int = 2
+    max_reviews: int = 3
     last_critique: str = ""
     review_decision: str = ""  # "accept" | "refine" | "give_up"
+    review_score: float = 0.0  # 0-10 rubric score from the latest review
+    min_quality_score: float = 7.0  # below this, refine (until budget)
 
     # Terminal state
     outcome: str = ""  # "success", "fail_exhausted", "fail_budget", "error"

@@ -63,10 +63,12 @@ Two bounded loops (both proven to terminate):
 
 1. **Model selection** — Evaluator-Optimizer bounded by the candidate pool /
    `max_attempts` (providers: Groq → Mistral → OpenRouter, all free).
-2. **Summary review** — the generated digest is critiqued by the reviewer node
-   against a rubric (accuracy, specificity, clarity, tone, formatting). If it
-   fails, the `refine` node rewrites it addressing the critique, then it is
-   reviewed again — up to `max_reviews` passes (default 2).
+2. **Summary review** — the generated digest is scored by a reviewer node on a
+   detail rubric (specificity, code substance, coverage, correctness, tone,
+   structure). Below the quality bar (`min_quality_score`, default 7.0), the
+   `refine` node rewrites it adding depth and code, then it is re-scored — up
+   to `max_reviews` passes (default 3). Graceful degradation if the reviewer
+   tooling fails.
 
 ### Key Features
 
@@ -107,20 +109,24 @@ python -m digest_agent.main
 
 ### LLM Providers
 
-Providers are tried in a fallback chain — **Groq → Mistral → OpenRouter** —
-until a model passes the health check. Configure a key for each provider you
-want available (all models used are free):
+Providers are tried in a fallback chain — **Gemini → OpenRouter → Groq →
+Mistral** — until a capable model passes the health check. Configure a key for
+each provider you want available (all models used are free):
 
 | Provider | Key var | Candidate models (free) |
 |---|---|---|
+| Gemini | `GEMINI_API_KEY` | `gemini-3.6-flash`, `gemini-flash-lite-latest` |
+| OpenRouter | `OPENROUTER_API_KEY` | Live catalog filtered to price 0 |
 | Groq | `GROQ_API_KEY` | `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `groq/compound-mini` |
 | Mistral | `MISTRAL_API_KEY` | `mistral-small-latest`, `open-mistral-7b` |
-| OpenRouter | `OPENROUTER_API_KEY` | Live catalog filtered to price 0 |
 
-The evaluator-optimizer loop tests candidates in chain order (Groq first,
-then Mistral, then OpenRouter) and picks the first that passes. Providers
-without a configured key are skipped. If none configure a key, the run
-aborts with a clear error.
+The evaluator-optimizer loop tests candidates in chain order and picks the
+first that passes. Providers without a configured key are skipped. If none
+configure a key, the run aborts with a clear error.
+
+The summary is then drafted with the strongest available model and passed
+through a **scored review/refine loop** (see below) that drives toward a
+detailed, code-bearing digest.
 
 ### Notifiers
 
@@ -145,9 +151,10 @@ All values can be set in `.env` or as environment variables.
 |---|---|---|
 | `GITHUB_TOKEN` | Yes | GitHub personal access token (repo scope) |
 | `GITHUB_REPOS` | Yes | Comma-separated list of repos (owner/repo format) |
-| `GROQ_API_KEY` | No* | Groq key (tried first) |
-| `MISTRAL_API_KEY` | No* | Mistral key (tried second) |
-| `OPENROUTER_API_KEY` | No* | OpenRouter key (tried last; alias `OPEN_ROUTER_API_KEY` accepted) |
+| `GEMINI_API_KEY` | No* | Google AI Studio key (tried first) |
+| `OPENROUTER_API_KEY` | No* | OpenRouter key (tried second; alias `OPEN_ROUTER_API_KEY` accepted) |
+| `GROQ_API_KEY` | No* | Groq key (tried third) |
+| `MISTRAL_API_KEY` | No* | Mistral key (tried fourth) |
 | `SMTP_HOST` | No | SMTP host (default `smtp.gmail.com`) |
 | `SMTP_PORT` | No | SMTP port (default `465`) |
 | `SMTP_STARTTLS` | No | `true` to use STARTTLS (needed for port 587) |
@@ -161,8 +168,8 @@ All values can be set in `.env` or as environment variables.
 | `LOOKBACK_DAYS` | No | Days to look back (default: 1) |
 | `DIGEST_OUTPUT_DIR` | No | Directory for generated PDFs (default: system temp dir) |
 
-\* At least one of `GROQ_API_KEY` / `MISTRAL_API_KEY` / `OPENROUTER_API_KEY`
-is required. They are tried in that order.
+\* At least one of `GEMINI_API_KEY` / `OPENROUTER_API_KEY` / `GROQ_API_KEY` /
+`MISTRAL_API_KEY` is required. They are tried in that order.
 
 ### Project Structure
 
