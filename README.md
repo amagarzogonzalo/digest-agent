@@ -61,7 +61,7 @@ END
 ### Key Features
 
 - **Hexagonal Architecture** — core depends only on abstract ports, no vendor SDKs
-- **Configurable LLM providers** — OpenRouter, Groq, or Mistral (switch via `LLM_PROVIDER`)
+- **Configurable LLM providers** — Groq, Mistral, and OpenRouter with automatic fallback
 - **SMTP notifier** — works with Gmail or any SMTP host (Ethereal for testing)
 - **Evaluator-Optimizer loop** — bounded by `min(len(candidate_pool), max_attempts)`
 - **Three loop exit paths**: PASS / FAIL_EXHAUSTED / FAIL_BUDGET (all tested)
@@ -95,16 +95,20 @@ python -m digest_agent.main
 
 ### LLM Providers
 
-Set `LLM_PROVIDER` to choose the backend (default `openrouter`):
+Providers are tried in a fallback chain — **Groq → Mistral → OpenRouter** —
+until a model passes the health check. Configure a key for each provider you
+want available (all models used are free):
 
-| `LLM_PROVIDER` | Key var | Candidate models |
+| Provider | Key var | Candidate models (free) |
 |---|---|---|
-| `openrouter` | `OPENROUTER_API_KEY` | Fetched live from OpenRouter's free-model catalog |
-| `groq` | `GROQ_API_KEY` | `qwen/qwen3.6-27b`, `openai/gpt-oss-20b`, `meta-llama/llama-prompt-guard-2-86m` |
-| `mistral` | `MISTRAL_API_KEY` | `mistral-small-latest`, `open-mistral-7b` |
+| Groq | `GROQ_API_KEY` | `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `groq/compound-mini` |
+| Mistral | `MISTRAL_API_KEY` | `mistral-small-latest`, `open-mistral-7b` |
+| OpenRouter | `OPENROUTER_API_KEY` | Live catalog filtered to price 0 |
 
-The evaluator-optimizer loop tests candidates in order and picks the first
-that passes, so the ordering above is "best first".
+The evaluator-optimizer loop tests candidates in chain order (Groq first,
+then Mistral, then OpenRouter) and picks the first that passes. Providers
+without a configured key are skipped. If none configure a key, the run
+aborts with a clear error.
 
 ### Environment Variables
 
@@ -114,10 +118,9 @@ All values can be set in `.env` or as environment variables.
 |---|---|---|
 | `GITHUB_TOKEN` | Yes | GitHub personal access token (repo scope) |
 | `GITHUB_REPOS` | Yes | Comma-separated list of repos (owner/repo format) |
-| `LLM_PROVIDER` | Yes | `openrouter` (default), `groq`, or `mistral` |
-| `OPENROUTER_API_KEY` | No* | OpenRouter key (alias `OPEN_ROUTER_API_KEY` accepted) |
-| `GROQ_API_KEY` | No* | Groq key |
-| `MISTRAL_API_KEY` | No* | Mistral key |
+| `GROQ_API_KEY` | No* | Groq key (tried first) |
+| `MISTRAL_API_KEY` | No* | Mistral key (tried second) |
+| `OPENROUTER_API_KEY` | No* | OpenRouter key (tried last; alias `OPEN_ROUTER_API_KEY` accepted) |
 | `SMTP_HOST` | No | SMTP host (default `smtp.gmail.com`) |
 | `SMTP_PORT` | No | SMTP port (default `465`) |
 | `SMTP_STARTTLS` | No | `true` to use STARTTLS (needed for port 587) |
@@ -128,7 +131,8 @@ All values can be set in `.env` or as environment variables.
 | `LOOKBACK_DAYS` | No | Days to look back (default: 1) |
 | `DIGEST_OUTPUT_DIR` | No | Directory for generated PDFs (default: system temp dir) |
 
-\* The key for your chosen `LLM_PROVIDER` is required; the others are ignored.
+\* At least one of `GROQ_API_KEY` / `MISTRAL_API_KEY` / `OPENROUTER_API_KEY`
+is required. They are tried in that order.
 
 ### Project Structure
 
@@ -152,6 +156,7 @@ digest-agent/
 │       ├── adapters/
 │       │   └── driven/
 │       │       ├── openai_compat.py       # Shared OpenAI-compatible base
+│       │       ├── fallback_provider.py   # Groq -> Mistral -> OpenRouter chain
 │       │       ├── github_adapter.py
 │       │       ├── openrouter_adapter.py
 │       │       ├── groq_adapter.py

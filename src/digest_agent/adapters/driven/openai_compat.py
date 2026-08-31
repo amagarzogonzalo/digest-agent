@@ -87,10 +87,55 @@ class OpenAICompatAdapter(LLMProviderPort):
     def complete(self, model_id: ModelId, prompt: str) -> str:
         """Complete a prompt using the specified model."""
         try:
-            return self._chat(model_id, [{"role": "user", "content": prompt}], timeout=60).strip()
+            content = self._chat(model_id, [{"role": "user", "content": prompt}], timeout=60)
+            return strip_reasoning_prefix(content)
         except requests.exceptions.Timeout:
             raise CompletionError("Timeout during completion")
         except RateLimitError:
             raise CompletionError("Rate limited during completion")
         except Exception as e:
             raise CompletionError(f"Completion failed: {e}")
+
+
+def strip_reasoning_prefix(text: str) -> str:
+    """Remove a leading reasoning/thinking block some models emit.
+
+    Returns the visible answer only. If no reasoning marker is found the
+    text is returned unchanged.
+    """
+    lowered = text.lower()
+    markers = ("<thinking", "<|start|>", "thinking\n", "here's a thinking")
+    idx = -1
+    for m in markers:
+        j = lowered.find(m)
+        if j != -1 and (idx == -1 or j < idx):
+            idx = j
+    if idx == -1:
+        return text
+    rest = text[idx:]
+    # A closing tag clearly ends the block.
+    for close in ("</thinking>", "<|end|>"):
+        c = rest.lower().find(close)
+        if c != -1:
+            return rest[c + len(close):].strip()
+    # No closing tag: skip reasoning-style lines until real content appears.
+    lines = rest.splitlines()
+    keep = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped and not _is_reasoning_line(stripped):
+            keep = i
+            break
+    return "\n".join(lines[keep:]).strip()
+
+
+def _is_reasoning_line(line: str) -> bool:
+    """Heuristic: is this line part of a model's reasoning preamble?"""
+    lowered = line.lower()
+    if lowered.startswith(("thinking", "<", "here's", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.")):
+        return True
+    if lowered.startswith(("* ", "- ", "# ", "**", "`")) and len(line) < 80:
+        return False
+    if lowered in ("analyze", "analyse", "understand", "identify", "decide", "final", "conclusion"):
+        return True
+    return bool(line.startswith("   ") or line.startswith("\t") or line.startswith("    "))

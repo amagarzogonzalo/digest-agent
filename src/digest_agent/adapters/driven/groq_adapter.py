@@ -9,7 +9,7 @@ class GroqAdapter(OpenAICompatAdapter):
 
     endpoint = "https://api.groq.com/openai/v1"
     candidate_models: list[ModelId] = [
-        "qwen/qwen3.6-27b",
+        "openai/gpt-oss-120b",
         "openai/gpt-oss-20b",
-        "meta-llama/llama-prompt-guard-2-86m",
+        "groq/compound-mini",
     ]

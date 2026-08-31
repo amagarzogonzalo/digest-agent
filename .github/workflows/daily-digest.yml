@@ -25,8 +25,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.DIGEST_GH_TOKEN }}
           GITHUB_REPOS: ${{ vars.GITHUB_REPOS }}
-          LOOKBACK_DAYS: "1"
+          LOOKBACK_DAYS: ${{ vars.LOOKBACK_DAYS || '1' }}
+          # Provider fallback chain (Groq -> Mistral -> OpenRouter).
+          # Only providers with a key configured are used; all are free.
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # SMTP relay (defaults to Gmail). Ethereal example:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_STARTTLS: ${{ secrets.SMTP_STARTTLS }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
