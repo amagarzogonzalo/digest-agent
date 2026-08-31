@@ -150,7 +150,7 @@ class ReportLabAdapter(DocumentRendererPort):
             elif line.startswith("- ") or line.startswith("  - "):
                 flush_code()
                 bullets.append(line.lstrip("- ").strip())
-            elif raw.startswith("  "):
+            elif raw.startswith("  ") or line.startswith(("+", "-", "@@")):
                 flush_bullets()
                 code.append(raw.rstrip())
             else:
@@ -176,26 +176,23 @@ def _code_block(lines, style):
     out = []
     for raw in lines:
         line = raw.rstrip("\n")
-        if line.startswith("+") and not line.startswith("+++ "):
+        stripped = line.lstrip()
+        if stripped.startswith("+") and not stripped.startswith("+++ ") and not stripped.startswith("+^"):
             st = ParagraphStyle("add", parent=style,
                                 textColor=colors.HexColor("#14532d"),
-                                backColor=colors.HexColor("#ecfdf5"))
-        elif line.startswith("-") and not line.startswith("--- "):
+                                backColor=colors.HexColor("#dcfce7"))
+        elif stripped.startswith("-") and not stripped.startswith("--- ") and not stripped.startswith("-^"):
             st = ParagraphStyle("del", parent=style,
-                                textColor=colors.HexColor("#7f1d1d"),
-                                backColor=colors.HexColor("#fdecec"))
-        elif line.strip().startswith("@@"):
+                                textColor=colors.HexColor("#991b1b"),
+                                backColor=colors.HexColor("#fee2e2"))
+        elif stripped.startswith("@@"):
             st = ParagraphStyle("hdr", parent=style,
                                 textColor=colors.HexColor("#7c3aed"),
-                                backColor=colors.HexColor("#f5f3ff"))
+                                backColor=colors.HexColor("#ede9fe"))
         else:
             st = style
-        out.append(Paragraph(_esc(line), st))
+        out.append(Paragraph(_esc(stripped), st))
     return out
-
-
-def _esc(text: str) -> str:
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def _flush_code_block(story, st, code):

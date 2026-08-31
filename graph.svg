@@ -1,4 +1,4 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='960' height='470' viewBox='0 0 960 470'>
+<svg xmlns='http://www.w3.org/2000/svg' width='960' height='430' viewBox='0 0 960 430'>
 <style> text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#111827;font-size:11px} .sub{font-size:9px;fill:#374151} .lbl{font-size:9px;fill:#6b7280;font-style:italic} .edge{stroke:#9ca3af;stroke-width:1.3;fill:none} .cycle{stroke:#dc2626;stroke-width:1.6;stroke-dasharray:5,3} .legend{font-size:10px;fill:#111827} </style>
 <line class='edge' x1='210' y1='44' x2='20' y2='109' />
 <line class='edge' x1='210' y1='109' x2='20' y2='174' />
@@ -10,7 +10,8 @@
 <line class='edge' x1='450' y1='54' x2='260' y2='119' />
 <line class='edge' x1='450' y1='119' x2='260' y2='184' />
 <line class='edge' x1='450' y1='184' x2='260' y2='274' />
-<line class='edge' x1='450' y1='274' x2='510' y2='54' />
+<line class='edge' x1='450' y1='274' x2='260' y2='354' />
+<line class='edge' x1='450' y1='354' x2='510' y2='54' />
 <line class='edge' x1='700' y1='54' x2='510' y2='134' />
 <line class='edge' x1='700' y1='134' x2='510' y2='214' />
 <line class='edge' x1='700' y1='214' x2='510' y2='314' />
@@ -18,7 +19,7 @@
 <text class='lbl' x='705' y='220' text-anchor='middle'>accept</text>
 <line class='edge cycle' x1='700' y1='314' x2='510' y2='404' />
 <text class='lbl' x='605' y='355' text-anchor='middle'>refine</text>
-<line class='edge cycle' x1='700' y1='404' x2='510' y2='54' />
+<line class='edge cycle' x1='700' y1='404' x2='260' y2='354' />
 <line class='edge' x1='900' y1='134' x2='710' y2='224' />
 <line class='edge' x1='900' y1='224' x2='710' y2='314' />
 <rect x='20' y='30' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
@@ -26,15 +27,17 @@
 <rect x='20' y='95' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
 <text x='115' y='113' text-anchor='middle'>set_metadata (uid/version)</text>
 <rect x='20' y='160' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
-<text x='115' y='178' text-anchor='middle'>select_and_test_model</text>
+<text x='115' y='178' text-anchor='middle'>select_and_test_model (per-agent loop)</text>
 <rect x='260' y='40' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='58' text-anchor='middle'>pr_dive_0 (deep dive)</text>
+<text x='355' y='58' text-anchor='middle'>pr_dive_0 (deep dive, k=1)</text>
 <rect x='260' y='105' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='123' text-anchor='middle'>pr_dive_1 (deep dive)</text>
+<text x='355' y='123' text-anchor='middle'>pr_dive_1 (deep dive, k=2)</text>
 <rect x='260' y='170' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='188' text-anchor='middle'>pr_dive_2 (deep dive)</text>
+<text x='355' y='188' text-anchor='middle'>pr_dive_2 (deep dive, k=3)</text>
 <rect x='260' y='260' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
 <text x='355' y='278' text-anchor='middle'>assemble (merge + overall)</text>
+<rect x='260' y='340' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='355' y='358' text-anchor='middle'>chair (final reviewer agent)</text>
 <rect x='510' y='40' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
 <text x='605' y='58' text-anchor='middle'>reviewer: detail</text>
 <rect x='510' y='120' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
@@ -44,7 +47,7 @@
 <rect x='510' y='300' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
 <text x='605' y='318' text-anchor='middle'>aggregate_review</text>
 <rect x='510' y='390' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='408' text-anchor='middle'>refine</text>
+<text x='605' y='408' text-anchor='middle'>refine (rewrite)</text>
 <rect x='710' y='120' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
 <text x='805' y='138' text-anchor='middle'>finalize (prepend deterministic)</text>
 <rect x='710' y='210' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>

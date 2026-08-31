@@ -8,16 +8,17 @@ import os
 NODES = [
     ("fetch",    "fetch_github (activity + diffs)", 20, 30, "data"),
     ("meta",     "set_metadata (uid/version)", 20, 95, "data"),
-    ("select",   "select_and_test_model", 20, 160, "data"),
-    ("dive0",    "pr_dive_0 (deep dive)", 260, 40, "gen"),
-    ("dive1",    "pr_dive_1 (deep dive)", 260, 105, "gen"),
-    ("dive2",    "pr_dive_2 (deep dive)", 260, 170, "gen"),
+    ("select",   "select_and_test_model (per-agent loop)", 20, 160, "data"),
+    ("dive0",    "pr_dive_0 (deep dive, k=1)", 260, 40, "gen"),
+    ("dive1",    "pr_dive_1 (deep dive, k=2)", 260, 105, "gen"),
+    ("dive2",    "pr_dive_2 (deep dive, k=3)", 260, 170, "gen"),
     ("assemble", "assemble (merge + overall)", 260, 260, "gen"),
+    ("chair",    "chair (final reviewer agent)", 260, 340, "gen"),
     ("r0", "reviewer: detail", 510, 40, "review"),
     ("r1", "reviewer: accuracy", 510, 120, "review"),
     ("r2", "reviewer: tone", 510, 200, "review"),
     ("agg",  "aggregate_review", 510, 300, "review"),
-    ("refine", "refine", 510, 390, "review"),
+    ("refine", "refine (rewrite)", 510, 390, "review"),
     ("final", "finalize (prepend deterministic)", 710, 120, "final"),
     ("render", "render_pdf", 710, 210, "final"),
     ("notify", "send_notification", 710, 300, "final"),
@@ -33,13 +34,14 @@ EDGES = [
     ("dive0", "dive1", "", False),
     ("dive1", "dive2", "", False),
     ("dive2", "assemble", "", False),
-    ("assemble", "r0", "", False),
+    ("assemble", "chair", "", False),
+    ("chair", "r0", "", False),
     ("r0", "r1", "", False),
     ("r1", "r2", "", False),
     ("r2", "agg", "", False),
     ("agg", "final", "accept", False),
     ("agg", "refine", "refine", True),
-    ("refine", "r0", "", True),
+    ("refine", "chair", "", True),
     ("final", "render", "", False),
     ("render", "notify", "", False),
 ]
@@ -62,7 +64,7 @@ def _esc(t):
 
 def render_svg(path):
     pos = {n[0]: (n[2], n[3]) for n in NODES}
-    W, H = 960, 470
+    W, H = 960, 430
     out = [f"<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}' viewBox='0 0 {W} {H}'>"]
     out.append(
         "<style> text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#111827;font-size:11px} "

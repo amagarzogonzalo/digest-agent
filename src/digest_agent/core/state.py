@@ -45,6 +45,14 @@ class DigestState:
     pr_dive_2: str = ""
     overall_narrative: str = ""
 
+    # Final polished summary produced by the digest "chair" agent (last summary)
+    final_summary: str = ""
+
+    # Working model chosen per-PR worker via _select_agent_model (informational)
+    agent_model_0: str = ""
+    agent_model_1: str = ""
+    agent_model_2: str = ""
+
     # Review committee state (3 parallel reviewers use distinct keys to avoid reducers)
     reviewer_critique_0: str = ""
     reviewer_critique_1: str = ""
@@ -55,11 +63,11 @@ class DigestState:
 
     # Review / refine loop state
     review_count: int = 0
-    max_reviews: int = 4
+    max_reviews: int = 6
     last_critique: str = ""
     review_decision: str = ""  # "accept" | "refine" | "give_up"
     review_score: float = 0.0  # 0-10 rubric score (committee average)
-    min_quality_score: float = 7.0  # below this, refine (until budget)
+    min_quality_score: float = 8.0  # below this, refine (until budget)
 
     # Terminal state
     outcome: str = ""  # "success", "fail_exhausted", "fail_budget", "error"

@@ -4,8 +4,13 @@ The graph composes two bounded, reviewable loops:
   * model selection   (select_and_test_model -> itself) Evaluator-Optimizer loop.
   * summary review    (review committee -> refine -> review committee) loop.
 
-Node flow: fetch -> select -> summarize -> review committee -> [refine loop]
--> finalize -> render -> notify -> END, plus a handle_failure branch.
+Per-agent model selection is re-performed in a loop: each worker sub-agent
+(deep-dive, chair, reviewers, refine) asks the provider for a working model
+via _select_agent_model rather than blindly reusing one hardcoded model.
+
+Node flow: fetch -> select -> [per-PR deep dives] -> assemble -> chair ->
+review committee -> [refine loop] -> finalize -> render -> notify -> END,
+plus a handle_failure branch.
 """
 
 from functools import partial
@@ -26,6 +31,7 @@ from digest_agent.ports import (
     LLMProviderPort,
     DocumentRendererPort,
     NotifierPort,
+    ModelId,
 )
 
 REVIEWER_FOCUS = {
@@ -41,6 +47,28 @@ def _dataclass_fields(cls):
     return set(getattr(cls, "__dataclass_fields__", {}))
 
 
+def _normalize_markdown(text: str) -> str:
+    """Lightly clean LLM markdown so it matches the PDF renderer expectations.
+
+    - strips any leading reasoning prefix
+    - ensures no leading/trailing blank lines
+    - collapses a leading single '# ' title so the deterministic prefix
+      (added in finalize) isn't duplicated
+    - keeps '## ' section headings and ``` code fences intact
+    """
+    text = strip_reasoning_prefix(text).strip()
+    lines = text.splitlines()
+    out = []
+    dropped_title = False
+    for ln in lines:
+        s = ln.strip()
+        if not dropped_title and s.startswith("# ") and not s.startswith("## "):
+            dropped_title = True
+            continue
+        out.append(ln)
+    return "\n".join(out).strip()
+
+
 class Orchestrator:
     """Builds and runs the digest pipeline graph."""
 
@@ -51,8 +79,9 @@ class Orchestrator:
         document_renderer: DocumentRendererPort,
         notifier: NotifierPort,
         max_attempts: int = 6,
-        max_reviews: int = 4,
+        max_reviews: int = 6,
         pr_depth: int = PR_DEPTH,
+        min_quality_score: float = 8.0,
     ):
         self.activity_source = activity_source
         self.llm_provider = llm_provider
@@ -61,6 +90,7 @@ class Orchestrator:
         self.max_attempts = max_attempts
         self.max_reviews = max_reviews
         self.pr_depth = pr_depth
+        self.min_quality_score = min_quality_score
         self.policy = ModelSelectionPolicy()
         self._graph = None
 
@@ -75,9 +105,11 @@ class Orchestrator:
         graph.add_node("select_and_test_model", self._select_and_test_model_node)
 
         # Orchestrator-Workers: one deep-dive sub-agent per latest merged PR.
-        for i in range(PR_DEPTH):
+        for i in range(self.pr_depth):
             graph.add_node(f"pr_dive_{i}", partial(self._pr_worker_node, pr_index=i))
         graph.add_node("assemble", self._assemble_node)
+        # Final consolidated summary written by the digest "chair" agent.
+        graph.add_node("chair", self._chair_node)
 
         for k in range(3):
             graph.add_node(f"review_{k}", partial(self._review_node, focus_key=k))
@@ -110,12 +142,13 @@ class Orchestrator:
         )
 
         # Workers fan out over the latest PRs, then assemble merges results.
-        for i in range(PR_DEPTH):
-            if i + 1 < PR_DEPTH:
+        for i in range(self.pr_depth):
+            if i + 1 < self.pr_depth:
                 graph.add_edge(f"pr_dive_{i}", f"pr_dive_{i + 1}")
             else:
                 graph.add_edge(f"pr_dive_{i}", "assemble")
-        graph.add_edge("assemble", "review_0")
+        graph.add_edge("assemble", "chair")
+        graph.add_edge("chair", "review_0")
         graph.add_edge("review_0", "review_1")
         graph.add_edge("review_1", "review_2")
         graph.add_edge("review_2", "aggregate_review")
@@ -145,6 +178,7 @@ class Orchestrator:
         state = initial_state or DigestState(repos=[], lookback_days=1)
         state.max_attempts = self.max_attempts
         state.max_reviews = self.max_reviews
+        state.min_quality_score = self.min_quality_score
         raw = graph.invoke(self._to_fields(state))
         return self._from_fields(raw)
 
@@ -178,6 +212,34 @@ class Orchestrator:
     def _route_after_review(self, state) -> str:
         state = self._ensure_state(state)
         return state.review_decision or "accept"
+
+    def _select_agent_model(self, state) -> ModelId | None:
+        """Return a WORKING model for the current agent call.
+
+        Reuses state.selected_model if it still passes a quick test; otherwise
+        iterates the free-model pool and tests sequentially, stopping at the
+        first pass. Returns the last-resort selected_model (may be None).
+        """
+        if state.selected_model:
+            try:
+                if self.llm_provider.test(state.selected_model).passed:
+                    return state.selected_model
+            except Exception:
+                pass
+
+        pool = state.candidate_pool or self.llm_provider.list_free_models()
+        if not state.candidate_pool:
+            state.candidate_pool = list(pool)
+        for m in pool:
+            if m == state.selected_model:
+                continue
+            try:
+                if self.llm_provider.test(m).passed:
+                    state.selected_model = m
+                    return m
+            except Exception:
+                continue
+        return state.selected_model
 
     def _fetch_github_node(self, state) -> dict:
         state = self._ensure_state(state)
@@ -218,25 +280,32 @@ class Orchestrator:
     def _pr_worker_node(self, state, pr_index: int) -> dict:
         """Orchestrator-worker: deep-dive ONE recent merged PR into detailed prose."""
         state = self._ensure_state(state)
-        if not state.selected_model:
-            return {"outcome": "error", "error_message": "No model selected"}
+        model = self._select_agent_model(state)
+        if not model:
+            return {
+                f"pr_dive_{pr_index}": "<!-- deep-dive failed -->",
+                "outcome": "error",
+                "error_message": "No working model available",
+            }
+        updates = {f"agent_model_{pr_index}": model}
         recent = latest_merged_prs(state.activity, self.pr_depth)
         if pr_index < len(recent):
             pr = recent[pr_index]
             try:
-                dive = strip_reasoning_prefix(
+                dive = _normalize_markdown(
                     self.llm_provider.complete(
-                        state.selected_model,
+                        model,
                         self._build_pr_dive_prompt(pr, state.activity),
                     )
-                ).strip()
-                return {f"pr_dive_{pr_index}": dive}
+                )
+                updates[f"pr_dive_{pr_index}"] = dive
+                return updates
             except Exception as e:
-                return {
-                    f"pr_dive_{pr_index}": "<!-- deep-dive failed -->",
-                    "error_message": f"Summarization failed: {e}",
-                }
-        return {f"pr_dive_{pr_index}": "<!-- no PR -->"}
+                updates[f"pr_dive_{pr_index}"] = "<!-- deep-dive failed -->"
+                updates["error_message"] = f"Summarization failed: {e}"
+                return updates
+        updates[f"pr_dive_{pr_index}"] = "<!-- no PR -->"
+        return updates
 
     def _assemble_node(self, state) -> dict:
         """Assemble per-PR deep dives into a detailed digest + a concise overall."""
@@ -267,29 +336,52 @@ class Orchestrator:
 
         return {"summary": body.strip(), "review_count": 0}
 
+    def _chair_node(self, state) -> dict:
+        """Final reviewer agent: synthesize the assembled deep dives into one
+        polished, cohesive final summary."""
+        state = self._ensure_state(state)
+        model = self._select_agent_model(state)
+        if not model:
+            return {}
+        try:
+            polished = _normalize_markdown(
+                self.llm_provider.complete(
+                    model,
+                    self._build_chair_prompt(state.summary, state.activity),
+                )
+            )
+            if polished and polished.strip():
+                return {"final_summary": polished}
+        except Exception:
+            pass
+        return {}
+
     def _overall_narrative(self, state) -> str:
         """A short (3-5 sentence) non-bullet narrative tying the PRs together."""
-        if not state.selected_model:
+        model = self._select_agent_model(state)
+        if not model:
             return ""
         try:
-            return strip_reasoning_prefix(
+            return _normalize_markdown(
                 self.llm_provider.complete(
-                    state.selected_model,
+                    model,
                     self._build_overall_prompt(state.activity),
                 )
-            ).strip()
+            )
         except Exception:
             return ""
 
     def _review_node(self, state, focus_key: int) -> dict:
         state = self._ensure_state(state)
-        if not state.selected_model:
+        model = self._select_agent_model(state)
+        if not model:
             return {"outcome": "error", "error_message": "No model selected"}
         focus, label = REVIEWER_FOCUS[focus_key]
-        prompt = self._build_review_prompt(state.summary, state.activity, focus, label)
+        content = state.final_summary if state.final_summary else state.summary
+        prompt = self._build_review_prompt(content, state.activity, focus, label)
         try:
             accepted, critique, score = parse_review_verdict(
-                self.llm_provider.complete(state.selected_model, prompt))
+                self.llm_provider.complete(model, prompt))
             ret = {
                 f"reviewer_critique_{focus_key}": critique,
                 f"reviewer_score_{focus_key}": score,
@@ -335,31 +427,44 @@ class Orchestrator:
         }
 
     def _refine_node(self, state) -> dict:
+        """The chair re-writes the final summary to address reviewer critique."""
         state = self._ensure_state(state)
-        if not state.selected_model:
-            return {"outcome": "error", "error_message": "No model selected"}
-        prompt = self._build_refine_prompt(
-            state.summary, state.last_critique, state.activity)
+        model = self._select_agent_model(state)
+        if not model:
+            return {"review_decision": "accept"}
         try:
-            improved = strip_reasoning_prefix(
-                self.llm_provider.complete(state.selected_model, prompt))
+            improved = _normalize_markdown(
+                self.llm_provider.complete(
+                    model,
+                    self._build_refine_prompt(
+                        state.final_summary or state.summary,
+                        state.last_critique,
+                        state.activity,
+                    ),
+                )
+            )
             if improved and improved.strip():
-                return {"summary": improved}
+                return {"final_summary": improved}
             return {"review_decision": "accept"}
         except Exception:
             return {"review_decision": "accept"}
 
     def _finalize_node(self, state) -> dict:
         state = self._ensure_state(state)
-        if (state.deterministic_summary and state.summary
-                and not state.summary.startswith(state.deterministic_summary[:30])):
+        body = state.summary.strip() if state.summary else ""
+        polished = state.final_summary.strip() if state.final_summary else ""
+        if not body and not polished:
+            return {}
+        merged = "\n\n".join(p for p in (body, polished) if p)
+        if (state.deterministic_summary
+                and not merged.startswith(state.deterministic_summary[:30])):
             final = (
                 state.deterministic_summary.strip()
                 + "\n\n# Daily Digest (AI summary)\n\n"
-                + state.summary.strip()
+                + merged
             )
             return {"summary": final}
-        return {}
+        return {"summary": merged}
 
     def _render_pdf_node(self, state) -> dict:
         state = self._ensure_state(state)
@@ -467,6 +572,18 @@ class Orchestrator:
             "ACTIVITY:\n" + self._group_activity(activity)
         )
 
+    def _build_chair_prompt(self, body, activity) -> str:
+        return (
+            "You are the digest chair. Below are per-PR deep dives assembled from recent "
+            "merged pull requests. Review them and write the FINAL polished "
+            "'Daily Digest (AI summary)': a cohesive, well-structured markdown summary "
+            "that synthesizes these deep dives into one clear overview. Do not repeat the "
+            "per-PR sections verbatim; condense into an executive-style summary while "
+            "keeping the key technical detail, risks and watch-outs.\n\n"
+            "DEEP DIVES:\n" + body + "\n\n"
+            "ACTIVITY:\n" + self._group_activity(activity)
+        )
+
     def _build_review_prompt(self, summary, activity, focus, label) -> str:
         return (
             "You are a demanding reviewer on a digest committee. Specialty: " + label + ".\n\n"
@@ -503,8 +620,9 @@ def build_orchestrator(
     document_renderer: DocumentRendererPort,
     notifier: NotifierPort,
     max_attempts: int = 6,
-    max_reviews: int = 4,
+    max_reviews: int = 6,
     pr_depth: int = PR_DEPTH,
+    min_quality_score: float = 8.0,
 ) -> Orchestrator:
     return Orchestrator(
         activity_source=activity_source,
@@ -514,4 +632,5 @@ def build_orchestrator(
         max_attempts=max_attempts,
         max_reviews=max_reviews,
         pr_depth=pr_depth,
+        min_quality_score=min_quality_score,
     )

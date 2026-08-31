@@ -52,12 +52,13 @@ Two composable patterns from Anthropic's agent-design taxonomy:
 START
   -> fetch_github            [activity + diffs, builds deterministic snapshot]
   -> set_metadata            [stamp uid/version/UTC timestamp]
-  -> select_and_test_model   [LOOP: first capable model, bumped by max_attempts]
-  -> pr_dive_0..2            [Orchestrator-Workers: deep-dive the latest merged PRs]
-  -> assemble                [merge per-PR dives + short Overall narrative]
+  -> select_and_test_model   [per-agent Evaluator-Optimizer model loop]
+  -> pr_dive_0..k-1          [k Orchestrator-Worker sub-agents, each picks its own model]
+  -> assemble                [merge per-PR deep dives + Overall narrative]
+  -> chair                   [final reviewer agent writes the polished summary]
   -> review committee        [3 parallel reviewers -> consensus score]
-     <-> refine              [LOOP: rewrite until all pass nor budget]
-  -> finalize                [prepend deterministic 'Executive Snapshot' above AI narrative]
+     <-> refine <-> chair    [LOOP: rewrite until all pass, up to max_reviews]
+  -> finalize                [prepend deterministic 'Executive Snapshot']
   -> render_pdf              [styled PDF with color-coded diffs]
   -> send_notification       [SMTP or Resend]
 END
@@ -65,14 +66,13 @@ END
 
 Two bounded loops (both terminate):
 
-1. **Model selection** — Evaluator-Optimizer bounded by the candidate pool /
-   `max_attempts` (providers: Gemini → OpenRouter → Groq → Mistral, all free).
+1. **Model selection** — Evaluator-Optimizer; each sub-agent re-runs it to pick a
+   working model (providers Gemini → OpenRouter → Groq → Mistral, all free).
 2. **Review committee** — three specialist reviewers grade the digest (detail &
-   code, accuracy, structure & tone). It is accepted only when all reviewers
-   pass the bar (`min_quality_score`); otherwise a `refine` step rewrites it and
-   it is re-reviewed — up to `max_reviews` (default 4). Failures degrade
-   gracefully: a rate-limited reviewer or refine step never discards a good
-   draft.
+   code, accuracy, structure & tone). It is accepted only when ALL reviewers
+   pass the bar (`min_quality_score`, default 8.0); otherwise a `refine` step
+   rewrites it and it is re-reviewed — up to `max_reviews` (default 6). A final
+   `chair` agent synthesizes each round. Failures degrade gracefully.
 
 Every run is stamped with an ID, version and UTC timestamp, shown in both the
 email subject and the PDF. See `graph.svg` (repo root) for the topology; it is

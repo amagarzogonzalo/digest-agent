@@ -53,15 +53,33 @@ def build_deterministic_summary(activity, deep_prs: int = 3) -> str:
     sorted_prs = _sort_prs(activity)
     recent = [p for p in sorted_prs if p.merged][:deep_prs]
 
+    # Author activity (distinct committers by commit count) and open-PR count.
+    authors: dict[str, int] = {}
+    for ra in activity:
+        for c in ra.commits:
+            authors[c.author] = authors.get(c.author, 0) + 1
+    top_authors = ", ".join(
+        "%s (%d)" % (a, n) for a, n in
+        sorted(authors.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)[:5]
+    ) or "none"
+    open_prs = sum(1 for ra in activity for p in ra.pull_requests if not p.merged)
+
     lines = [
         "## Executive Snapshot (from git data)",
         "",
         "- **Repos**: " + ", ".join(ra.repo for ra in activity),
         "- **Commits**: " + str(total_commits) + "  (refs: " + _short_refs([c for ra in activity for c in ra.commits]) + ")",
-        "- **Pull requests**: " + str(total_prs) + " total, " + str(merged_prs) + " merged",
-        "- **Lines changed**: +" + str(total_adds) + " / \u2212" + str(total_dels),
+        "- **Pull requests**: " + str(total_prs) + " total, " + str(merged_prs) + " merged"
+        + (", " + str(open_prs) + " open" if open_prs else ""),
+        "- **Lines changed**: +" + str(total_adds) + " / \u2212" + str(total_dels) + " (" + str(total_adds - total_dels) + " net)",
         "- **Files touched** (" + str(len(all_files)) + "): " + files_txt,
+        "- **Active authors**: " + top_authors,
     ]
+    if len(activity) > 1:
+        lines.append("- **Per repo**: " + "; ".join(
+            "%s (%d commits, +%d/-%d)" % (ra.repo, len(ra.commits), ra.additions, ra.deletions)
+            for ra in activity)
+        )
 
     # Latest merged PR deep-dives with complete file lists + diff patches.
     lines.append("")
