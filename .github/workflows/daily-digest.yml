@@ -24,7 +24,7 @@ jobs:
       - name: Run digest bot
         env:
           GITHUB_TOKEN: ${{ secrets.DIGEST_GH_TOKEN }}
-          GITHUB_REPOS: ${{ vars.GITHUB_REPOS }}
+          GITHUB_REPOS: ${{ vars.DIGEST_REPOS }}
           LOOKBACK_DAYS: ${{ vars.LOOKBACK_DAYS || '1' }}
           # Provider fallback chain (Gemini -> OpenRouter -> Groq -> Mistral).
           # Only providers with a key configured are used; all are free.
