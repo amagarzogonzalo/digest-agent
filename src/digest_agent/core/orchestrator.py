@@ -1,21 +1,28 @@
 """Orchestrator - LangGraph StateGraph wiring the digest pipeline.
 
-The graph composes two bounded, reviewable loops:
+Topology (parallel per-PR loops + a final combine loop):
   * model selection   (select_and_test_model -> itself) Evaluator-Optimizer loop.
-  * summary review    (review committee -> refine -> review committee) loop.
+  * k independent per-MR loops (k = latest merged PRs, capped at MAX_MR). Each
+    loop is scoped to ONE pull request and does its OWN deep-dive -> its OWN
+    review -> its OWN refine. All k loops run CONCURRENTLY inside a single
+    fan-out node (thread pool) for real wall-clock parallelism.
+  * a final combine loop: after all k loops join, the combine "chair"/reviewer
+    stage merges the k polished sections into one cohesive digest and puts them
+    through the shared review committee -> refine loop.
 
 Per-agent model selection is re-performed in a loop: each worker sub-agent
-(deep-dive, chair, reviewers, refine) asks the provider for a working model
+(deep-dive, reviewers, refine) asks the provider for a working model
 via _select_agent_model rather than blindly reusing one hardcoded model.
 
-Node flow: fetch -> select -> [per-PR deep dives] -> assemble -> chair ->
-review committee -> [refine loop] -> finalize -> render -> notify -> END,
-plus a handle_failure branch.
+Node flow: fetch -> select -> [k parallel per-MR loops] -> combine ->
+review committee -> [refine loop back to combine] -> finalize -> render ->
+notify -> END, plus a handle_failure branch.
 """
 
 from functools import partial
 from uuid import uuid4
 from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 
 from langgraph.graph import StateGraph, START, END
 
@@ -41,6 +48,9 @@ REVIEWER_FOCUS = {
 }
 
 PR_DEPTH = 3  # number of latest merged PRs to deep-dive
+MAX_MR = 6  # hard cap on number of independent per-PR loops (state slot limit)
+_FAIL = "<!-- peer-dive failed -->"
+_NOPR = "<!-- no PR -->"
 
 
 def _dataclass_fields(cls):
@@ -104,13 +114,15 @@ class Orchestrator:
         graph.add_node("set_metadata", self._set_metadata_node)
         graph.add_node("select_and_test_model", self._select_and_test_model_node)
 
-        # Orchestrator-Workers: one deep-dive sub-agent per latest merged PR.
-        for i in range(self.pr_depth):
-            graph.add_node(f"pr_dive_{i}", partial(self._pr_worker_node, pr_index=i))
-        graph.add_node("assemble", self._assemble_node)
-        # Final consolidated summary written by the digest "chair" agent.
-        graph.add_node("chair", self._chair_node)
+        # k independent per-MR loops, each with its OWN deep-dive -> review ->
+        # refine sub-loop, all k run CONCURRENTLY inside a single fan-out node
+        # (thread pool) for real wall-clock parallelism.
+        graph.add_node("mr_loops", self._mr_loops_node)
 
+        # Final combine loop: merges the k polished sections, then runs them through
+        # the shared review committee -> refine loop (this preserves the committee
+        # tests while adding the per-MR loops).
+        graph.add_node("combine", self._combine_node)
         for k in range(3):
             graph.add_node(f"review_{k}", partial(self._review_node, focus_key=k))
         graph.add_node("aggregate_review", self._aggregate_review_node)
@@ -134,21 +146,17 @@ class Orchestrator:
             "select_and_test_model",
             self._route_after_selection,
             {
-                "pass": "pr_dive_0",
+                "pass": "mr_loops",
                 "continue": "select_and_test_model",
                 "fail_exhausted": "handle_failure",
                 "fail_budget": "handle_failure",
             },
         )
+        graph.add_edge("mr_loops", "combine")
 
-        # Workers fan out over the latest PRs, then assemble merges results.
-        for i in range(self.pr_depth):
-            if i + 1 < self.pr_depth:
-                graph.add_edge(f"pr_dive_{i}", f"pr_dive_{i + 1}")
-            else:
-                graph.add_edge(f"pr_dive_{i}", "assemble")
-        graph.add_edge("assemble", "chair")
-        graph.add_edge("chair", "review_0")
+        # Final combine loop: combine -> review_0/1/2 -> aggregate -> {finalize /
+        #  refine -> combine}.
+        graph.add_edge("combine", "review_0")
         graph.add_edge("review_0", "review_1")
         graph.add_edge("review_1", "review_2")
         graph.add_edge("review_2", "aggregate_review")
@@ -163,7 +171,7 @@ class Orchestrator:
             },
         )
 
-        graph.add_edge("refine", "review_0")
+        graph.add_edge("refine", "combine")
 
         graph.add_edge("finalize", "render_pdf")
         graph.add_edge("render_pdf", "send_notification")
@@ -277,50 +285,112 @@ class Orchestrator:
             updates["outcome"] = outcome.action
         return updates
 
-    def _pr_worker_node(self, state, pr_index: int) -> dict:
-        """Orchestrator-worker: deep-dive ONE recent merged PR into detailed prose."""
+    def _mr_count(self) -> int:
+        """Number of independent per-MR loops (capped at the state slot limit)."""
+        return max(1, min(self.pr_depth, MAX_MR))
+
+    def _mr_loops_node(self, state) -> dict:
+        """Run ALL k per-MR loops concurrently (real parallelism via a thread pool).
+
+        Each per-MR loop is self-contained: it deep-dives ONE merged PR into a
+        polished section, gives that section its OWN review, and refines it, all
+        scoped to its own index slab. The k loops execute in parallel workers and
+        their per-MR updates are merged back into the shared state.
+        """
         state = self._ensure_state(state)
-        model = self._select_agent_model(state)
-        if not model:
-            return {
-                f"pr_dive_{pr_index}": "<!-- deep-dive failed -->",
-                "outcome": "error",
-                "error_message": "No working model available",
-            }
-        updates = {f"agent_model_{pr_index}": model}
         recent = latest_merged_prs(state.activity, self.pr_depth)
-        if pr_index < len(recent):
-            pr = recent[pr_index]
+        k = self._mr_count()
+        base = self._to_fields(state)
+        merged: dict = {}
+        with ThreadPoolExecutor(max_workers=max(1, k)) as ex:
+            futures = []
+            for i in range(k):
+                pr = recent[i] if i < len(recent) else None
+                snapshot = self._from_fields(base)
+                futures.append(
+                    (i, ex.submit(self._run_one_mr, snapshot, pr, i))
+                )
+            for _, fut in futures:
+                merged.update(fut.result())
+        return merged
+
+    def _run_one_mr(self, snapshot: DigestState, pr, mr_index: int) -> dict:
+        """One full per-MR loop: deep-dive -> its OWN review -> its OWN refine."""
+        updates: dict = {}
+        if pr is None:
+            updates[f"pr_dive_{mr_index}"] = _NOPR
+            updates[f"mr_done_{mr_index}"] = True
+            return updates
+        model = self._select_agent_model(snapshot)
+        if not model:
+            updates[f"pr_dive_{mr_index}"] = _FAIL
+            updates["outcome"] = "error"
+            updates["error_message"] = "No working model available"
+            updates[f"mr_done_{mr_index}"] = True
+            return updates
+        updates[f"agent_model_{mr_index}"] = model
+        try:
+            dive = _normalize_markdown(
+                self.llm_provider.complete(
+                    model, self._build_pr_dive_prompt(pr, snapshot.activity)
+                )
+            )
+        except Exception as e:
+            updates[f"pr_dive_{mr_index}"] = _FAIL
+            updates["error_message"] = f"Summarization failed: {e}"
+            updates[f"mr_done_{mr_index}"] = True
+            return updates
+        updates[f"pr_dive_{mr_index}"] = dive
+
+        section = dive
+        for _ in range(max(1, self.max_reviews)):
             try:
-                dive = _normalize_markdown(
+                accepted, critique, score = parse_review_verdict(
                     self.llm_provider.complete(
-                        model,
-                        self._build_pr_dive_prompt(pr, state.activity),
+                        model, self._build_mr_review_prompt(section)
                     )
                 )
-                updates[f"pr_dive_{pr_index}"] = dive
-                return updates
-            except Exception as e:
-                updates[f"pr_dive_{pr_index}"] = "<!-- deep-dive failed -->"
-                updates["error_message"] = f"Summarization failed: {e}"
-                return updates
-        updates[f"pr_dive_{pr_index}"] = "<!-- no PR -->"
+            except Exception:
+                break
+            updates[f"mr_score_{mr_index}"] = score
+            updates[f"mr_critique_{mr_index}"] = critique
+            if accepted:
+                break
+            try:
+                improved = _normalize_markdown(
+                    self.llm_provider.complete(
+                        model, self._build_mr_refine_prompt(section, critique)
+                    )
+                )
+            except Exception:
+                break
+            if not improved.strip():
+                break
+            updates[f"pr_dive_{mr_index}"] = improved
+            section = improved
+        updates[f"mr_done_{mr_index}"] = True
         return updates
 
-    def _assemble_node(self, state) -> dict:
-        """Assemble per-PR deep dives into a detailed digest + a concise overall."""
+    def _combine_node(self, state) -> dict:
+        """Final combine loop: merge the k polished per-MR sections into one digest.
+
+        First drafts the final summary from the k sections (as the chair agent),
+        then routes it to the shared review committee -> refine loop. Survives
+        re-entry after a refine (avoids destroying the refined text).
+        """
         state = self._ensure_state(state)
         if not state.has_activity:
             return {
-                "summary": "No activity across your repos in this period. Nothing to report today.",
+                "summary": "No activity across your repos in this period. "
+                           "Nothing to report today.",
                 "review_count": 0,
             }
         dives = [
-            getattr(state, f"pr_dive_{i}", "") for i in range(self.pr_depth)
+            getattr(state, f"pr_dive_{i}", "") for i in range(self._mr_count())
         ]
         dives = [
             d for d in dives
-            if d and "<!-- no PR -->" not in d and "deep-dive failed" not in d
+            if d and _NOPR not in d and _FAIL not in d
         ]
         dive_block = "\n\n".join(dives).strip()
 
@@ -334,27 +404,21 @@ class Orchestrator:
         if overall:
             body += "## Overall\n\n" + overall + "\n"
 
-        return {"summary": body.strip(), "review_count": 0}
-
-    def _chair_node(self, state) -> dict:
-        """Final reviewer agent: synthesize the assembled deep dives into one
-        polished, cohesive final summary."""
-        state = self._ensure_state(state)
-        model = self._select_agent_model(state)
-        if not model:
-            return {}
-        try:
-            polished = _normalize_markdown(
-                self.llm_provider.complete(
-                    model,
-                    self._build_chair_prompt(state.summary, state.activity),
-                )
-            )
-            if polished and polished.strip():
-                return {"final_summary": polished}
-        except Exception:
-            pass
-        return {}
+        updates: dict = {"summary": body.strip(), "review_count": 0}
+        if not state.final_summary:
+            model = self._select_agent_model(state)
+            if model:
+                try:
+                    polished = _normalize_markdown(
+                        self.llm_provider.complete(
+                            model, self._build_chair_prompt(body, state.activity)
+                        )
+                    )
+                    if polished and polished.strip():
+                        updates["final_summary"] = polished
+                except Exception:
+                    pass
+        return updates
 
     def _overall_narrative(self, state) -> str:
         """A short (3-5 sentence) non-bullet narrative tying the PRs together."""
@@ -603,6 +667,27 @@ class Orchestrator:
             "Critique:\n" + critique + "\n\n"
             "Digest to improve:\n" + summary + "\n\n"
             "RAW ACTIVITY:\n" + self._group_activity(activity)
+        )
+
+    def _build_mr_review_prompt(self, section: str) -> str:
+        return (
+            "You are a demanding reviewer evaluating a SINGLE pull-request section "
+            "of a daily digest. Rubric (0-10): 1. grounded in the diff. 2. real code "
+            "snippets named. 3. risks/tradeoffs covered.\n\n"
+            "SECTION:\n" + section + "\n\n"
+            "Respond exactly:\n"
+            "SCORE: <0-10>\n"
+            "VERDICT: PASS|REVISE\n"
+            "CRITIQUE:\n- <actionable>\n\n"
+            "PASS only if well met (>=8)."
+        )
+
+    def _build_mr_refine_prompt(self, section: str, critique: str) -> str:
+        return (
+            "You are a senior editor. REWRITE the digest section to address all "
+            "reviewer critique while keeping it grounded in the diff.\n\n"
+            "Critique:\n" + critique + "\n\n"
+            "Section to improve:\n" + section
         )
 
 

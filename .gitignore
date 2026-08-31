@@ -39,4 +39,8 @@ gmail_credentials/
 
 # Operating System
 .DS_Store
+
+# Generated digest PDFs
+digests/
+*.pdf
 ```

@@ -39,10 +39,15 @@ class DigestState:
     # Deterministic (git-only) snapshot shown above the LLM summary
     deterministic_summary: str = ""
 
-    # Per-PR deep-dive worker outputs (orchestrator-workers on the latest PRs)
+    # Per-PR deep-dive worker outputs (orchestrator-workers on the latest PRs).
+    # Each latest-merged PR runs its OWN miniature loop (deep-dive -> review ->
+    # refine) and writes its polished section here. Up to MAX_MR slots.
     pr_dive_0: str = ""
     pr_dive_1: str = ""
     pr_dive_2: str = ""
+    pr_dive_3: str = ""
+    pr_dive_4: str = ""
+    pr_dive_5: str = ""
     overall_narrative: str = ""
 
     # Final polished summary produced by the digest "chair" agent (last summary)
@@ -52,6 +57,37 @@ class DigestState:
     agent_model_0: str = ""
     agent_model_1: str = ""
     agent_model_2: str = ""
+    agent_model_3: str = ""
+    agent_model_4: str = ""
+    agent_model_5: str = ""
+
+    # Per-MR loop state: each merged PR gets its own review + refine loop scoped
+    # by index. mr_verdict_i -> "done" | "refine"; mr_done_i marks completion for
+    # the final combine stage to read.
+    mr_verdict_0: str = ""
+    mr_verdict_1: str = ""
+    mr_verdict_2: str = ""
+    mr_verdict_3: str = ""
+    mr_verdict_4: str = ""
+    mr_verdict_5: str = ""
+    mr_critique_0: str = ""
+    mr_critique_1: str = ""
+    mr_critique_2: str = ""
+    mr_critique_3: str = ""
+    mr_critique_4: str = ""
+    mr_critique_5: str = ""
+    mr_score_0: float = 0.0
+    mr_score_1: float = 0.0
+    mr_score_2: float = 0.0
+    mr_score_3: float = 0.0
+    mr_score_4: float = 0.0
+    mr_score_5: float = 0.0
+    mr_done_0: bool = False
+    mr_done_1: bool = False
+    mr_done_2: bool = False
+    mr_done_3: bool = False
+    mr_done_4: bool = False
+    mr_done_5: bool = False
 
     # Review committee state (3 parallel reviewers use distinct keys to avoid reducers)
     reviewer_critique_0: str = ""

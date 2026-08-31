@@ -2,58 +2,60 @@
 <style> text{font-family:Inter,Helvetica,Arial,sans-serif;fill:#111827;font-size:11px} .sub{font-size:9px;fill:#374151} .lbl{font-size:9px;fill:#6b7280;font-style:italic} .edge{stroke:#9ca3af;stroke-width:1.3;fill:none} .cycle{stroke:#dc2626;stroke-width:1.6;stroke-dasharray:5,3} .legend{font-size:10px;fill:#111827} </style>
 <line class='edge' x1='210' y1='44' x2='20' y2='109' />
 <line class='edge' x1='210' y1='109' x2='20' y2='174' />
-<line class='edge' x1='210' y1='174' x2='260' y2='54' />
-<text class='lbl' x='235' y='110' text-anchor='middle'>pass</text>
+<line class='edge' x1='210' y1='174' x2='240' y2='54' />
+<text class='lbl' x='225' y='110' text-anchor='middle'>pass</text>
 <path class='cycle' d='M 210 174 C 250 144, 250 144, 210 146' />
 <line class='edge cycle' x1='210' y1='174' x2='20' y2='304' />
 <text class='lbl' x='115' y='235' text-anchor='middle'>fail</text>
-<line class='edge' x1='450' y1='54' x2='260' y2='119' />
-<line class='edge' x1='450' y1='119' x2='260' y2='184' />
-<line class='edge' x1='450' y1='184' x2='260' y2='274' />
-<line class='edge' x1='450' y1='274' x2='260' y2='354' />
-<line class='edge' x1='450' y1='354' x2='510' y2='54' />
-<line class='edge' x1='700' y1='54' x2='510' y2='134' />
-<line class='edge' x1='700' y1='134' x2='510' y2='214' />
-<line class='edge' x1='700' y1='214' x2='510' y2='314' />
-<line class='edge' x1='700' y1='314' x2='710' y2='134' />
-<text class='lbl' x='705' y='220' text-anchor='middle'>accept</text>
-<line class='edge cycle' x1='700' y1='314' x2='510' y2='404' />
-<text class='lbl' x='605' y='355' text-anchor='middle'>refine</text>
-<line class='edge cycle' x1='700' y1='404' x2='260' y2='354' />
-<line class='edge' x1='900' y1='134' x2='710' y2='224' />
-<line class='edge' x1='900' y1='224' x2='710' y2='314' />
+<line class='edge' x1='430' y1='54' x2='240' y2='129' />
+<line class='edge' x1='430' y1='54' x2='240' y2='189' />
+<line class='edge' x1='430' y1='54' x2='240' y2='249' />
+<line class='edge' x1='430' y1='129' x2='240' y2='344' />
+<line class='edge' x1='430' y1='189' x2='240' y2='344' />
+<line class='edge' x1='430' y1='249' x2='240' y2='344' />
+<line class='edge' x1='430' y1='344' x2='500' y2='84' />
+<line class='edge' x1='690' y1='84' x2='500' y2='164' />
+<line class='edge' x1='690' y1='164' x2='500' y2='244' />
+<line class='edge' x1='690' y1='244' x2='500' y2='334' />
+<line class='edge' x1='690' y1='334' x2='700' y2='134' />
+<text class='lbl' x='695' y='230' text-anchor='middle'>accept</text>
+<line class='edge cycle' x1='690' y1='334' x2='500' y2='414' />
+<text class='lbl' x='595' y='370' text-anchor='middle'>refine</text>
+<line class='edge cycle' x1='690' y1='414' x2='240' y2='344' />
+<line class='edge' x1='890' y1='134' x2='700' y2='214' />
+<line class='edge' x1='890' y1='214' x2='700' y2='294' />
 <rect x='20' y='30' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
 <text x='115' y='48' text-anchor='middle'>fetch_github (activity + diffs)</text>
 <rect x='20' y='95' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
 <text x='115' y='113' text-anchor='middle'>set_metadata (uid/version)</text>
 <rect x='20' y='160' width='190' height='28' rx='9' fill='#e1effe' stroke='#1d4ed8' stroke-width='1.5'/>
-<text x='115' y='178' text-anchor='middle'>select_and_test_model (per-agent loop)</text>
-<rect x='260' y='40' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='58' text-anchor='middle'>pr_dive_0 (deep dive, k=1)</text>
-<rect x='260' y='105' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='123' text-anchor='middle'>pr_dive_1 (deep dive, k=2)</text>
-<rect x='260' y='170' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='188' text-anchor='middle'>pr_dive_2 (deep dive, k=3)</text>
-<rect x='260' y='260' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='278' text-anchor='middle'>assemble (merge + overall)</text>
-<rect x='260' y='340' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
-<text x='355' y='358' text-anchor='middle'>chair (final reviewer agent)</text>
-<rect x='510' y='40' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='58' text-anchor='middle'>reviewer: detail</text>
-<rect x='510' y='120' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='138' text-anchor='middle'>reviewer: accuracy</text>
-<rect x='510' y='200' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='218' text-anchor='middle'>reviewer: tone</text>
-<rect x='510' y='300' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='318' text-anchor='middle'>aggregate_review</text>
-<rect x='510' y='390' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
-<text x='605' y='408' text-anchor='middle'>refine (rewrite)</text>
-<rect x='710' y='120' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
-<text x='805' y='138' text-anchor='middle'>finalize (prepend deterministic)</text>
-<rect x='710' y='210' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
-<text x='805' y='228' text-anchor='middle'>render_pdf</text>
-<rect x='710' y='300' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
-<text x='805' y='318' text-anchor='middle'>send_notification</text>
+<text x='115' y='178' text-anchor='middle'>select_and_test_model (seed model)</text>
+<rect x='240' y='40' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='335' y='58' text-anchor='middle'>k per-MR loops (async parallel)</text>
+<rect x='240' y='115' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='335' y='133' text-anchor='middle'>MR loop 1 (dive+review+refine)</text>
+<rect x='240' y='175' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='335' y='193' text-anchor='middle'>MR loop 2 (dive+review+refine)</text>
+<rect x='240' y='235' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='335' y='253' text-anchor='middle'>MR loop k (dive+review+refine)</text>
+<rect x='240' y='330' width='190' height='28' rx='9' fill='#e7f6ec' stroke='#15803d' stroke-width='1.5'/>
+<text x='335' y='348' text-anchor='middle'>combine (final merge loop)</text>
+<rect x='500' y='70' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
+<text x='595' y='88' text-anchor='middle'>reviewer: detail</text>
+<rect x='500' y='150' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
+<text x='595' y='168' text-anchor='middle'>reviewer: accuracy</text>
+<rect x='500' y='230' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
+<text x='595' y='248' text-anchor='middle'>reviewer: tone</text>
+<rect x='500' y='320' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
+<text x='595' y='338' text-anchor='middle'>aggregate_review</text>
+<rect x='500' y='400' width='190' height='28' rx='9' fill='#fff4e5' stroke='#b4530a' stroke-width='1.5'/>
+<text x='595' y='418' text-anchor='middle'>refine (rewrite)</text>
+<rect x='700' y='120' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
+<text x='795' y='138' text-anchor='middle'>finalize (prepend deterministic)</text>
+<rect x='700' y='200' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
+<text x='795' y='218' text-anchor='middle'>render_pdf</text>
+<rect x='700' y='280' width='190' height='28' rx='9' fill='#f3e8fd' stroke='#7e22ce' stroke-width='1.5'/>
+<text x='795' y='298' text-anchor='middle'>send_notification</text>
 <rect x='20' y='290' width='190' height='28' rx='9' fill='#fde2e2' stroke='#b91c1c' stroke-width='1.5'/>
 <text x='115' y='308' text-anchor='middle'>handle_failure</text>
 <g class='legend'>
