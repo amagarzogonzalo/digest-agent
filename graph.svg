@@ -1,162 +1,155 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" width="1200" height="740" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToyYjFjMDc1Zi00MmJiLTRiNDAtYTJlMi01Y2YzMDI0YWZhMDIAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaDqOAXJ1AfsJLOsclLC7q3IAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo5MTg3ZWVjZi1jOTY2LTRmZWMtOTI2Yy03MjkzZWY2YTYyMmNscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoscFckdA99Y2RjMcMMs8I7AAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggLRI1scYYW3Ei+pER4330kWd3unKCnc8xFa9QAkagOqCkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaETNJ5TzNEiKDOZr3t6K+BUAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCCNuR53Uf3uVitaqW98UAFZF7UHI+AgRm53EA2Toy8LMmRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjmZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjJiMWMwNzVmLTQyYmItNGI0MC1hMmUyLTVjZjMwMjRhZmEwMi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjYyODZmNzljLTM0OTMtNGQ4YS1hZGFhLTBiOTJkYTkyODMzOHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCAtEjWxxhhbcSL6kRHjffSRZ3e6coKdzzEVr1ACRqA6oKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggPQ34vjvN4MCipJ6GWlJ5bSk0g25r+DPJ4527lRCmBLeiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggK3T/vk8K1rtJvVWeDOBrA43E84fEu8tmfNaFELfSU1t0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQLZPlA2BR+tsdi8IUj4LlZEdxsTx+W1t5dFFOzAyr5HmOPNhGaBNSSAmVzfdsJ14wUADw/59ECDMNEYhTfssZtw=</c2pa:manifest></metadata>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 560" width="1440" height="560" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo1OGU2YzRjYy0yMDc1LTQ5M2MtYmM5Yi02NzdjZmY1ZjgyMmQAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaDH9ddfjgbLMl29vXC8CTwgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo2YzJlOGZjZS0xMzVlLTRiODAtODQwNC0xZDJlNjE5NTdkODRscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo9Y+323ZuhyLNl1YUAHsBLgAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgg0oXdvbpu2F2uueL8zut9nq2rv1CK8W4e5nLwa7NGMLmkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaG0ATFPT6JP6/ZhJE3BQ3DQAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCCK2qXyMax3zLCJxr1AtaikAdcc0RtogXQpCJi+MfRh4mRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjmZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjU4ZTZjNGNjLTIwNzUtNDkzYy1iYzliLTY3N2NmZjVmODIyZC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmEwMTY1NmNhLTM0MDUtNDA2NC04NjdlLThmMWZlYTg3YTkwMnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDShd29um7YXa654vzO632erau/UIrxbh7mcvBrs0YwuaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggnaq/QRhv1QxJ2VyFJqor4Hzw54pK2ACCwTlcVw9YcM2iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggj5DH2PkE19q/CNMQmgIB4MPn9LedOQatG0mrU2zjtbp0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQF8VQyM+ty461hAY2avL/GiwuqHJuD7Qql2Q7e/NfGicMWb1sjfK7uW3QSDH4VQz8AzCiMJOm+9xLFQvk/prSso=</c2pa:manifest></metadata>
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="#94a3b8"/>
     </marker>
-    <marker id="arrowRed" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/>
+    <marker id="arrowRed" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="#dc2626"/>
     </marker>
   </defs>
 
   <style>
-    .title{font-size:20px;font-weight:700;fill:#0f172a}
-    .subtitle{font-size:12.5px;fill:#64748b}
-    .band{font-size:11px;font-weight:700;fill:#94a3b8;letter-spacing:.02em}
-    .nodeTitle{font-size:12px;font-weight:600;fill:#0f172a}
-    .nodeSub{font-size:9.5px;fill:#64748b}
-    .edgeLbl{font-size:9.5px;fill:#64748b;font-style:italic}
-    .edgeLblRed{font-size:9.5px;fill:#b91c1c;font-style:italic}
-    .legend{font-size:10.5px;fill:#334155}
-    .edge{stroke:#64748b;stroke-width:1.4;fill:none;marker-end:url(#arrow)}
-    .edgeLoop{stroke:#b91c1c;stroke-width:1.4;fill:none;stroke-dasharray:5,3;marker-end:url(#arrowRed)}
-    .node{stroke-width:1.4}
+    .title{font-size:19px;font-weight:700;fill:#0f172a;letter-spacing:-.01em}
+    .subtitle{font-size:12px;fill:#64748b}
+    .nodeTitle{font-size:11.5px;font-weight:600;fill:#0f172a}
+    .nodeSub{font-size:8.8px;fill:#94a3b8}
+    .edgeLbl{font-size:9px;fill:#64748b;font-style:italic}
+    .edgeLblRed{font-size:9px;fill:#dc2626;font-style:italic}
+    .legend{font-size:10px;fill:#475569}
+    .edge{stroke:#cbd5e1;stroke-width:1.4;fill:none;marker-end:url(#arrow)}
+    .edgeLoop{stroke:#dc2626;stroke-width:1.3;fill:none;stroke-dasharray:4,3;marker-end:url(#arrowRed)}
+    .node{stroke-width:1.3}
   </style>
 
-  <rect x="0" y="0" width="1200" height="740" fill="#ffffff"/>
+  <rect x="0" y="0" width="1440" height="560" fill="#ffffff"/>
 
-  <!-- Title -->
-  <text x="40" y="34" class="title">MR Digest Pipeline</text>
-  <text x="40" y="53" class="subtitle">LangGraph workflow — GitHub activity → parallel MR analysis → multi-pass review → PDF digest</text>
+  <text x="40" y="30" class="title">MR Digest Pipeline</text>
+  <text x="40" y="48" class="subtitle">LangGraph StateGraph — evaluator-optimizer model selection → k parallel per-PR loops → chair combine → review committee loop</text>
 
-  <!-- ===== Band 1: INGEST ===== -->
-  <text x="110" y="76" class="band">Ingest</text>
-  <rect x="30" y="86" width="160" height="48" rx="10" class="node" fill="#e1effe" stroke="#1d4ed8"/>
-  <text x="110" y="106" text-anchor="middle" class="nodeTitle">fetch_github</text>
-  <text x="110" y="120" text-anchor="middle" class="nodeSub">activity + diffs</text>
+  <!-- ============ ROW 1 ============ -->
+  <rect x="15" y="90" width="150" height="50" rx="10" class="node" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="90" y="111" text-anchor="middle" class="nodeTitle">fetch_github</text>
+  <text x="90" y="125" text-anchor="middle" class="nodeSub">activity + diffs</text>
 
-  <rect x="230" y="86" width="160" height="48" rx="10" class="node" fill="#e1effe" stroke="#1d4ed8"/>
-  <text x="310" y="106" text-anchor="middle" class="nodeTitle">set_metadata</text>
-  <text x="310" y="120" text-anchor="middle" class="nodeSub">assign uid / version</text>
+  <rect x="215" y="90" width="150" height="50" rx="10" class="node" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="290" y="111" text-anchor="middle" class="nodeTitle">set_metadata</text>
+  <text x="290" y="125" text-anchor="middle" class="nodeSub">uid / version / timestamp</text>
 
-  <rect x="430" y="86" width="160" height="48" rx="10" class="node" fill="#e1effe" stroke="#1d4ed8"/>
-  <text x="510" y="104" text-anchor="middle" class="nodeTitle">select_and_test</text>
-  <text x="510" y="117" text-anchor="middle" class="nodeTitle">_model</text>
+  <rect x="415" y="90" width="150" height="50" rx="10" class="node" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="490" y="113" text-anchor="middle" font-size="10.3" font-weight="600" fill="#0f172a">select_and_test_model</text>
+  <text x="490" y="126" text-anchor="middle" class="nodeSub">evaluator–optimizer loop</text>
 
-  <rect x="680" y="86" width="160" height="48" rx="10" class="node" fill="#fde2e2" stroke="#b91c1c"/>
-  <text x="760" y="106" text-anchor="middle" class="nodeTitle">handle_failure</text>
-  <text x="760" y="120" text-anchor="middle" class="nodeSub">alert + abort run</text>
+  <!-- mr_loops: stacked-card motif for internal thread-pool parallelism -->
+  <rect x="629" y="76" width="150" height="50" rx="10" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+  <rect x="622" y="83" width="150" height="50" rx="10" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1"/>
+  <rect x="615" y="90" width="150" height="50" rx="10" class="node" fill="#ecfdf5" stroke="#059669"/>
+  <text x="690" y="111" text-anchor="middle" class="nodeTitle">mr_loops</text>
+  <text x="690" y="125" text-anchor="middle" class="nodeSub">k× per-PR loops (thread pool)</text>
 
-  <path class="edge" d="M190,110 L230,110"/>
-  <path class="edge" d="M390,110 L430,110"/>
-  <path class="edgeLoop" d="M590,102 L680,102"/>
-  <text x="635" y="94" text-anchor="middle" class="edgeLblRed">fail</text>
+  <rect x="815" y="90" width="150" height="50" rx="10" class="node" fill="#ecfdf5" stroke="#059669"/>
+  <text x="890" y="111" text-anchor="middle" class="nodeTitle">combine</text>
+  <text x="890" y="125" text-anchor="middle" class="nodeSub">merge dives → chair draft</text>
 
-  <!-- ===== Band 2: GENERATE (fan-out) ===== -->
-  <text x="110" y="176" class="band">Generate — k× parallel</text>
-  <rect x="80" y="184" width="220" height="196" rx="12" fill="none" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="1015" y="90" width="150" height="50" rx="10" class="node" fill="#fffbeb" stroke="#d97706"/>
+  <text x="1090" y="111" text-anchor="middle" class="nodeTitle">review_0</text>
+  <text x="1090" y="125" text-anchor="middle" class="nodeSub">detail &amp; code substance</text>
 
-  <rect x="100" y="200" width="160" height="46" rx="10" class="node" fill="#e7f6ec" stroke="#15803d"/>
-  <text x="180" y="219" text-anchor="middle" class="nodeTitle">MR loop 1</text>
-  <text x="180" y="232" text-anchor="middle" class="nodeSub">dive → review → refine</text>
+  <rect x="1215" y="90" width="150" height="50" rx="10" class="node" fill="#fffbeb" stroke="#d97706"/>
+  <text x="1290" y="111" text-anchor="middle" class="nodeTitle">review_1</text>
+  <text x="1290" y="125" text-anchor="middle" class="nodeSub">accuracy &amp; groundedness</text>
 
-  <rect x="100" y="258" width="160" height="46" rx="10" class="node" fill="#e7f6ec" stroke="#15803d"/>
-  <text x="180" y="277" text-anchor="middle" class="nodeTitle">MR loop 2</text>
-  <text x="180" y="290" text-anchor="middle" class="nodeSub">dive → review → refine</text>
+  <!-- row 1 sequential edges -->
+  <path class="edge" d="M165,115 L215,115"/>
+  <path class="edge" d="M365,115 L415,115"/>
+  <path class="edge" d="M565,115 L615,115"/>
+  <text x="590" y="105" text-anchor="middle" class="edgeLbl">pass</text>
+  <path class="edge" d="M765,115 L815,115"/>
+  <path class="edge" d="M965,115 L1015,115"/>
+  <path class="edge" d="M1165,115 L1215,115"/>
 
-  <rect x="100" y="316" width="160" height="46" rx="10" class="node" fill="#e7f6ec" stroke="#15803d"/>
-  <text x="180" y="335" text-anchor="middle" class="nodeTitle">MR loop k</text>
-  <text x="180" y="348" text-anchor="middle" class="nodeSub">dive → review → refine</text>
+  <!-- select_and_test_model self loop (evaluator-optimizer) -->
+  <path class="edge" d="M462,90 C462,64 518,64 518,90" marker-end="url(#arrow)"/>
+  <text x="490" y="60" text-anchor="middle" class="edgeLbl">continue</text>
 
-  <!-- fan out from select_and_test_model -->
-  <path class="edge" d="M470,134 C420,168 320,190 262,220"/>
-  <path class="edge" d="M470,134 C440,190 340,255 262,280"/>
-  <path class="edge" d="M470,134 C460,230 370,310 262,338"/>
-  <text x="430" y="160" text-anchor="middle" class="edgeLbl">pass</text>
+  <!-- ============ FAILURE LANE ============ -->
+  <rect x="15" y="190" width="150" height="50" rx="10" class="node" fill="#fef2f2" stroke="#dc2626"/>
+  <text x="90" y="211" text-anchor="middle" class="nodeTitle">handle_failure</text>
+  <text x="90" y="225" text-anchor="middle" class="nodeSub">abort + error summary</text>
 
-  <!-- ===== Band 3: REVIEW & REFINE ===== -->
-  <text x="440" y="398" class="band" text-anchor="middle">Review &amp; refine</text>
+  <path class="edgeLoop" d="M90,140 L90,190"/>
+  <text x="118" y="168" class="edgeLblRed">error</text>
 
-  <rect x="30" y="410" width="160" height="48" rx="10" class="node" fill="#e7f6ec" stroke="#15803d"/>
-  <text x="110" y="430" text-anchor="middle" class="nodeTitle">combine</text>
-  <text x="110" y="444" text-anchor="middle" class="nodeSub">final merge loop</text>
+  <path class="edgeLoop" d="M490,140 L490,165 L140,165 L140,190"/>
+  <text x="300" y="158" text-anchor="middle" class="edgeLblRed">fail_exhausted / fail_budget</text>
 
-  <!-- convergence from loops into combine -->
-  <path class="edge" d="M155,246 C120,300 78,350 70,410"/>
-  <path class="edge" d="M180,304 C150,340 108,375 110,410"/>
-  <path class="edge" d="M205,362 C190,385 160,398 150,410"/>
+  <!-- ============ ROW 1 → ROW 2 turn ============ -->
+  <path class="edge" d="M1290,140 L1290,290"/>
 
-  <rect x="230" y="410" width="160" height="48" rx="10" class="node" fill="#fff4e5" stroke="#b4530a"/>
-  <text x="310" y="430" text-anchor="middle" class="nodeTitle">reviewer: detail</text>
-  <text x="310" y="444" text-anchor="middle" class="nodeSub">completeness</text>
+  <!-- ============ ROW 2 (right → left) ============ -->
+  <rect x="1215" y="290" width="150" height="50" rx="10" class="node" fill="#fffbeb" stroke="#d97706"/>
+  <text x="1290" y="311" text-anchor="middle" class="nodeTitle">review_2</text>
+  <text x="1290" y="325" text-anchor="middle" class="nodeSub">structure, coverage &amp; tone</text>
 
-  <rect x="430" y="410" width="160" height="48" rx="10" class="node" fill="#fff4e5" stroke="#b4530a"/>
-  <text x="510" y="430" text-anchor="middle" class="nodeTitle">reviewer: accuracy</text>
-  <text x="510" y="444" text-anchor="middle" class="nodeSub">fact-check</text>
+  <rect x="1015" y="290" width="150" height="50" rx="10" class="node" fill="#fffbeb" stroke="#d97706"/>
+  <text x="1090" y="311" text-anchor="middle" class="nodeTitle">aggregate_review</text>
+  <text x="1090" y="325" text-anchor="middle" class="nodeSub">score + route decision</text>
 
-  <rect x="630" y="410" width="160" height="48" rx="10" class="node" fill="#fff4e5" stroke="#b4530a"/>
-  <text x="710" y="430" text-anchor="middle" class="nodeTitle">reviewer: tone</text>
-  <text x="710" y="444" text-anchor="middle" class="nodeSub">style / voice</text>
+  <rect x="815" y="290" width="150" height="50" rx="10" class="node" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="890" y="311" text-anchor="middle" class="nodeTitle">finalize</text>
+  <text x="890" y="325" text-anchor="middle" class="nodeSub">prepend deterministic summary</text>
 
-  <rect x="830" y="410" width="160" height="48" rx="10" class="node" fill="#fff4e5" stroke="#b4530a"/>
-  <text x="910" y="430" text-anchor="middle" class="nodeTitle">aggregate_review</text>
-  <text x="910" y="444" text-anchor="middle" class="nodeSub">combine verdicts</text>
+  <rect x="615" y="290" width="150" height="50" rx="10" class="node" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="690" y="311" text-anchor="middle" class="nodeTitle">render_pdf</text>
+  <text x="690" y="325" text-anchor="middle" class="nodeSub">digest.pdf</text>
 
-  <path class="edge" d="M190,434 L230,434"/>
-  <path class="edge" d="M390,434 L430,434"/>
-  <path class="edge" d="M590,434 L630,434"/>
-  <path class="edge" d="M790,434 L830,434"/>
+  <rect x="415" y="290" width="150" height="50" rx="10" class="node" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="490" y="311" text-anchor="middle" class="nodeTitle">send_notification</text>
+  <text x="490" y="325" text-anchor="middle" class="nodeSub">email notify</text>
 
-  <rect x="830" y="510" width="160" height="48" rx="10" class="node" fill="#fff4e5" stroke="#b4530a"/>
-  <text x="910" y="530" text-anchor="middle" class="nodeTitle">refine</text>
-  <text x="910" y="544" text-anchor="middle" class="nodeSub">rewrite draft</text>
+  <rect x="40" y="295" width="100" height="40" rx="20" fill="#0f172a"/>
+  <text x="90" y="320" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">END</text>
 
-  <path class="edge" d="M910,458 L910,510"/>
-  <text x="950" y="488" class="edgeLbl">refine</text>
+  <!-- row 2 sequential edges (right to left) -->
+  <path class="edge" d="M1215,315 L1165,315"/>
+  <path class="edge" d="M1015,315 L965,315"/>
+  <text x="990" y="305" text-anchor="middle" class="edgeLbl">accept / give_up</text>
+  <path class="edge" d="M815,315 L765,315"/>
+  <path class="edge" d="M615,315 L565,315"/>
+  <path class="edge" d="M415,315 L140,315"/>
 
-  <!-- refine loops back to combine -->
-  <path class="edgeLoop" d="M830,534 C700,534 55,534 55,434 L86,434"/>
-  <text x="200" y="526" text-anchor="middle" class="edgeLblRed">loop back</text>
+  <path class="edge" d="M90,240 L90,295"/>
 
-  <!-- ===== Band 4: FINALIZE ===== -->
-  <text x="110" y="588" class="band">Finalize</text>
+  <!-- ============ REFINE offshoot ============ -->
+  <rect x="1015" y="390" width="150" height="50" rx="10" class="node" fill="#fffbeb" stroke="#d97706"/>
+  <text x="1090" y="411" text-anchor="middle" class="nodeTitle">refine</text>
+  <text x="1090" y="425" text-anchor="middle" class="nodeSub">chair rewrites per critique</text>
 
-  <rect x="30" y="598" width="160" height="48" rx="10" class="node" fill="#f3e8fd" stroke="#7e22ce"/>
-  <text x="110" y="618" text-anchor="middle" class="nodeTitle">finalize</text>
-  <text x="110" y="632" text-anchor="middle" class="nodeSub">prepend header</text>
+  <path class="edgeLoop" d="M1090,340 L1090,390"/>
+  <text x="1128" y="368" class="edgeLblRed">refine</text>
 
-  <rect x="230" y="598" width="160" height="48" rx="10" class="node" fill="#f3e8fd" stroke="#7e22ce"/>
-  <text x="310" y="618" text-anchor="middle" class="nodeTitle">render_pdf</text>
-  <text x="310" y="632" text-anchor="middle" class="nodeSub">digest.pdf</text>
+  <!-- refine loops back to combine, routed around the outside -->
+  <path class="edgeLoop" d="M1165,415 L1400,415 L1400,68 L890,68 L890,90"/>
+  <text x="1400" y="245" text-anchor="middle" class="edgeLblRed" transform="rotate(-90 1400 245)">loop back to combine</text>
 
-  <rect x="430" y="598" width="160" height="48" rx="10" class="node" fill="#f3e8fd" stroke="#7e22ce"/>
-  <text x="510" y="618" text-anchor="middle" class="nodeTitle">send_notification</text>
-  <text x="510" y="632" text-anchor="middle" class="nodeSub">Slack / email</text>
-
-  <path class="edge" d="M190,622 L230,622"/>
-  <path class="edge" d="M390,622 L430,622"/>
-
-  <!-- aggregate_review -> finalize (accept path) -->
-  <path class="edge" d="M870,458 C700,560 260,585 110,598"/>
-  <text x="700" y="575" text-anchor="middle" class="edgeLbl">accept</text>
-
-  <!-- ===== Legend ===== -->
+  <!-- ============ LEGEND ============ -->
   <g>
-    <rect x="30" y="672" width="14" height="14" rx="4" fill="#e1effe" stroke="#1d4ed8"/>
-    <text x="52" y="683" class="legend">Ingest</text>
+    <rect x="40" y="480" width="13" height="13" rx="4" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="61" y="490" class="legend">Ingest &amp; model selection</text>
 
-    <rect x="130" y="672" width="14" height="14" rx="4" fill="#e7f6ec" stroke="#15803d"/>
-    <text x="152" y="683" class="legend">Generate</text>
+    <rect x="235" y="480" width="13" height="13" rx="4" fill="#ecfdf5" stroke="#059669"/>
+    <text x="256" y="490" class="legend">Generate &amp; combine</text>
 
-    <rect x="245" y="672" width="14" height="14" rx="4" fill="#fff4e5" stroke="#b4530a"/>
-    <text x="267" y="683" class="legend">Review</text>
+    <rect x="415" y="480" width="13" height="13" rx="4" fill="#fffbeb" stroke="#d97706"/>
+    <text x="436" y="490" class="legend">Review committee</text>
 
-    <rect x="345" y="672" width="14" height="14" rx="4" fill="#f3e8fd" stroke="#7e22ce"/>
-    <text x="367" y="683" class="legend">Finalize</text>
+    <rect x="580" y="480" width="13" height="13" rx="4" fill="#f5f3ff" stroke="#7c3aed"/>
+    <text x="601" y="490" class="legend">Finalize</text>
 
-    <rect x="450" y="672" width="14" height="14" rx="4" fill="#fde2e2" stroke="#b91c1c"/>
-    <text x="472" y="683" class="legend">Failure</text>
+    <rect x="680" y="480" width="13" height="13" rx="4" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="701" y="490" class="legend">Failure</text>
 
-    <line x1="560" y1="679" x2="590" y2="679" stroke="#b91c1c" stroke-width="1.4" stroke-dasharray="5,3"/>
-    <text x="598" y="683" class="legend">conditional / loop edge</text>
+    <line x1="775" y1="487" x2="805" y2="487" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="4,3"/>
+    <text x="813" y="490" class="legend">conditional / loop edge</text>
   </g>
+  <text x="40" y="516" class="legend" fill="#94a3b8">mr_loops is a single graph node — the k per-PR dives run concurrently inside it via a ThreadPoolExecutor, not as separate LangGraph nodes.</text>
 </svg>

@@ -1,13 +1,22 @@
 # GitHub Digest Agent
 
 [![CI](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
+[![Daily Digest](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/daily-digest.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
 [![Python](https://img.shields.io/badge/Python-3.11_%7C_3.12-blue)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](#)
+[![LangGraph](https://img.shields.io/badge/LangGraph-✓-7c3aed)](#)
+[![Hexagonal](https://img.shields.io/badge/Architecture-Hexagonal%20%28Ports%20%26%20Adapters%29-1d4ed8)](#)
+[![PyPI? no](https://img.shields.io/badge/deploy-GitHub%20Actions%20cron-0ea5e9)](#)
 
-A professional Hexagonal (Ports & Adapters) architecture Python agent that,
-on a schedule, reads recent commits/PRs across configurable repositories,
-selects a currently-free LLM (testing candidates until one works),
-summarizes the activity, renders a PDF, and emails it.
+A professional **Hexagonal (Ports & Adapters)** agent that, on a schedule, reads
+recent commits/PRs across configurable repositories, selects a currently-free
+LLM (testing candidates until one works), summaries the activity with parallel
+per-PR deep-dive agents, renders a color-coded PDF, and emails it.
+
+## Pipeline
+
+![digest-agent pipeline](graph.svg)
 
 ## Overview
 
