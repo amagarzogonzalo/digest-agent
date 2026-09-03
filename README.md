@@ -7,325 +7,114 @@ and refines until it passes a quality bar, then emails you a **professional,
 color-coded PDF** — stamped with a unique run ID.
 
 <p align="center">
-  <a href="docs/sample-digest.pdf">
-    <img src="https://img.shields.io/badge/📄-View%20Sample%20Report-7c3aed?style=for-the-badge" alt="Sample digest"/>
-  </a>
-  →
-  <strong>see a real generated digest</strong>
+  <a href="docs/sample-digest.pdf">➤ <strong>View a real generated sample report (PDF)</strong></a>
 </p>
 
 ## ✨ Highlights
 
 | Capability | What it does |
 |---|---|
-| 🧠 **Hexagonal core** | Ports & Adapters — zero vendor imports in business logic |
+| 🧠 **Hexagonal core** | Ports & Adapters — no vendor imports in business logic |
 | ⚡ **Parallel agents** | `k` per-PR sub-agents deep-dive & self-review **concurrently** |
-| 🧑‍⚖️ **Review committee** | 3 reviewers + refine loop until `min_quality_score` (8.0) |
-| 🔁 **Per-agent model loop** | each sub-agent re-selects a working free LLM (Gemini → OpenRouter → Groq → Mistral) |
-| 🔍 **Diff-aware** | reads real patches — names files, functions, PRs, code |
+| 🧑‍⚖️ **Review committee** | 3 reviewers + refine loop until it meets the quality bar |
+| 🔁 **Per-agent model loop** | each sub-agent picks a working free LLM at call time |
+| 🔍 **Diff-aware** | reads real patches — names files, functions, PRs, actual code |
 | 📄 **Color-coded PDF** | green added / red removed, cover band, page numbers |
 | 🆔 **Report identity** | unique UID + version + UTC timestamp per run |
-| ⏰ **Auto-scheduled** | GitHub Actions cron at 07:00 Europe/Amsterdam |
+| ⏰ **Auto-scheduled** | GitHub Actions cron, 07:00 Europe/Amsterdam |
 
 <p align="center">
-  [![CI](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
-  [![Python](https://img.shields.io/badge/Python-3.11_%7C_3.12-blue)](#)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-  [![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](#)
-  [![LangGraph](https://img.shields.io/badge/LangGraph-✓-7c3aed)](#)
-  [![Docker](https://img.shields.io/badge/Docker-ready-2496ed)](#)
-  [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal-1d4ed8)](#)
+  <a href="https://github.com/amagarzogonzalo/digest-agent/actions"><img src="https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Python-3.11_%7C_3.12-blue" alt="Python">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
+  <img src="https://img.shields.io/badge/tests-44%20passing-brightgreen" alt="tests">
+  <img src="https://img.shields.io/badge/stack-LangGraph%20%C2%B7%20ReportLab%20%C2%B7%20Docker-blueviolet" alt="stack">
 </p>
 
 ## 🖼️ Pipeline
 
 <p align="center">
-  <img src="graph.svg" alt="digest-agent pipeline" width="90%"/>
+  <img src="graph.svg" alt="digest-agent pipeline" width="92%"/>
 </p>
 
-### 📎 Sample report
+The system composes two **bounded, self-improving loops** (both provably terminate):
 
-Want to see what it produces? **[Open a real generated digest (PDF)](docs/sample-digest.pdf)** —
-a color-coded, diff-rich engineering report emailed automatically by the agent.
+1. **Per-MR agent loop** — each of the latest `k` merged PRs runs its own
+   `deep-dive → review → refine` cycle in **parallel**, grounded in that PR's real diff.
+2. **Final combine loop** — a reviewer committee (detail/accuracy/tone) scores the
+   assembled digest and a `refine` step rewrites it until all reviewers pass
+   (`min_quality_score`, default 8.0; up to `max_reviews=6`).
 
-This project implements the **Hexagonal (Ports & Adapters)** design pattern at
-the system level, solving the concrete problem of business rules being welded
-to infrastructure choices. The core depends only on abstract interfaces
-("ports"), making it testable and reusable across projects.
+Each sub-agent **re-selects its own working model** from a free fallback chain
+(Gemini → OpenRouter → Groq → Mistral), and every report is stamped with a unique
+ID, version and timestamp.
 
-### Architecture
+---
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│                    HEXAGONAL ARCHITECTURE                     │
-│┌───────────────┐┌─────────────────────┐┌────────────────┐│
-││  Port Interfaces││   Application Core   ││  Driven Adapters ││
-││ (abstract, no   ││ - Orchestrator      ││ - GitHubAdapter  ││
-││  vendor imports)││ - ModelSelectionPolicy││ - OpenRouterAdapter││
-││                 ││ - DigestState       ││ - ReportLabAdapter││
-│└─────────────────┘└─────────────────────┘└────────────────┘│
-│           ▲                   ▲                   ▲           │
-│           │                   │                   │           │
-│           │                   │                   │           │
-│           │                   │                   │           │
-│           │                   │                   │           │
-│           └───────┬─────────────┘───────────────┘           │
-│                     │                                     │
-│              (composition)                            │
-│                                                                 │
-│              SchedulerTrigger (GitHub Actions workflow)        │
-│                                                                 │
-└───────────────────────────────────────────────────────────────┘
-```
-
-### Workflow Design
-
-Two composable patterns from Anthropic's agent-design taxonomy:
-
-- **Prompt Chaining** for the outer pipeline — a linear sequence with
-  programmatic gates between steps
-- **Evaluator-Optimizer** for model selection — generate a candidate,
-  evaluate it against acceptance criteria, loop until pass or budget exhausted
-
-### Pipeline
-
-```
-START
-  -> fetch_github            [activity + diffs, builds deterministic snapshot]
-  -> set_metadata            [stamp uid/version/UTC timestamp]
-  -> select_and_test_model   [per-agent Evaluator-Optimizer model loop]
-  -> pr_dive_0..k-1          [k Orchestrator-Worker sub-agents, each picks its own model]
-  -> assemble                [merge per-PR deep dives + Overall narrative]
-  -> chair                   [final reviewer agent writes the polished summary]
-  -> review committee        [3 parallel reviewers -> consensus score]
-     <-> refine <-> chair    [LOOP: rewrite until all pass, up to max_reviews]
-  -> finalize                [prepend deterministic 'Executive Snapshot']
-  -> render_pdf              [styled PDF with color-coded diffs]
-  -> send_notification       [SMTP or Resend]
-END
-```
-
-Two bounded loops (both terminate):
-
-1. **Model selection** — Evaluator-Optimizer; each sub-agent re-runs it to pick a
-   working model (providers Gemini → OpenRouter → Groq → Mistral, all free).
-2. **Review committee** — three specialist reviewers grade the digest (detail &
-   code, accuracy, structure & tone). It is accepted only when ALL reviewers
-   pass the bar (`min_quality_score`, default 8.0); otherwise a `refine` step
-   rewrites it and it is re-reviewed — up to `max_reviews` (default 6). A final
-   `chair` agent synthesizes each round. Failures degrade gracefully.
-
-Every run is stamped with an ID, version and UTC timestamp, shown in both the
-email subject and the PDF. See `graph.svg` (repo root) for the topology; it is
-generated by `gen_graph_svg.py`.
-
-### Key Features
-
-- **Hexagonal Architecture** — core depends only on abstract ports, no vendor SDKs
-- **Configurable LLM providers** — Groq, Mistral, and OpenRouter with automatic fallback
-- **SMTP notifier** — works with Gmail or any SMTP host (Ethereal for testing)
-- **Resend notifier** — switch via `NOTIFIER=resend` to send through the Resend HTTP API
-- **Evaluator-Optimizer todo loop** — model candidacy + multi-reviewer
-- **Review committee (consensus)** — 3 specialist reviewers (detail/code, accuracy, tone); accepted only when all pass the quality bar
-- **Per-PR deep-dive sub-agents** — Orchestrator-Workers fan out over the latest merged PRs, each producing a detailed technical section grounded in the actual diffs, then an assembler merges them
-- **Deterministic + AI hybrid** — a git-only "Executive Snapshot" is prepended, including a **full diff deep-dive of the latest merged PRs** (files, additions/deletions, verbatim diff hunks)
-- **Report identity** — every run is stamped with a unique ID, version, and UTC timestamp (shown in the subject + PDF)
-- **Diff-aware** — fetches per-PR/commit file changes + patches so summaries name files, APIs, config keys, and real code
-- **Professional multi-page PDF** — branded cover band, color-coded diff (green added / red removed), footer with page numbers
-- **Visual graph** — see `graph.svg` for the pipeline topology
-- **Three loop exit paths**: PASS / FAIL_EXHAUSTED / FAIL_BUDGET (all tested)
-- **Observability** — logs model selection, candidates tried, rejection reasons
-- **Idempotency** — re-running for same day/window deduplicates
-- **Cost/rate-limit aware** — minimal test calls, counts against free-tier quota
-- **Testability** — every node independently testable with mocked ports
-
-### Quick Start
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone and setup
-git clone <repo-url>
+git clone https://github.com/amagarzogonzalo/digest-agent.git
 cd digest-agent
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# 2. Install dependencies
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .[dev]
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your credentials (provider key, GitHub token, SMTP)
-
-# 4. Run locally
-# Values can come from .env (loaded automatically) or environment variables.
-python -m digest_agent.main
-
-# 5. Or run via GitHub Actions (included)
+cp .env.example .env          # add your GitHub token + one LLM key + email
+python -m digest_agent.main   # run once
 ```
 
-### Run with Docker
+With Docker:
 
 ```bash
 docker build -t digest-agent .
-# Mount your .env and an output volume:
-docker run --rm --env-file .env \
-  -v "$(pwd)/digests:/data/digests" \
-  digest-agent
+docker run --rm --env-file .env -v "$(pwd)/digests:/data/digests" digest-agent
 ```
 
-Generated PDFs go to `DIGEST_OUTPUT_DIR` (default: system temp dir). Bind it to
-a host folder (as above) to keep the reports, or set it in `.env`:
-`DIGEST_OUTPUT_DIR=./digests`.
+## ⚙️ Configuration
 
-### LLM Providers
+Set values in `.env` (or as environment variables). See [`.env.example`](.env.example) for the full list.
 
-Providers are tried in a fallback chain — **Gemini → OpenRouter → Groq →
-Mistral** — until a capable model passes the health check. Configure a key for
-each provider you want available (all models used are free):
+| Variable | Description |
+|---|---|
+| `GITHUB_TOKEN` · `GITHUB_REPOS` | Repo to read (e.g. `owner/repo`) |
+| `GEMINI_API_KEY` / `OPENROUTER_API_KEY` / `GROQ_API_KEY` / `MISTRAL_API_KEY` | LLM providers (tried in order, all free) |
+| `NOTIFIER` | `smtp` (Gmail/Ethereal) or `resend` |
+| `RECIPIENT_EMAIL` | Where to send the digest |
+| `LOOKBACK_DAYS` | Days of activity to include (default 1) |
+| `REVIEW_MAX_REVIEWS` · `REVIEW_MIN_SCORE` · `PR_DEPTH` | Quality / parallelism knobs |
 
-| Provider | Key var | Candidate models (free) |
-|---|---|---|
-| Gemini | `GEMINI_API_KEY` | `gemini-3.6-flash`, `gemini-flash-lite-latest` |
-| OpenRouter | `OPENROUTER_API_KEY` | Live catalog filtered to price 0 |
-| Groq | `GROQ_API_KEY` | `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `groq/compound-mini` |
-| Mistral | `MISTRAL_API_KEY` | `mistral-small-latest`, `open-mistral-7b` |
+## 🧱 Architecture
 
-The evaluator-optimizer loop tests candidates in chain order and picks the
-first that passes. Providers without a configured key are skipped. If none
-configure a key, the run aborts with a clear error.
-
-The summary is then drafted with the strongest available model and passed
-through a **scored review/refine loop** (see below) that drives toward a
-detailed, code-bearing digest.
-
-### Notifiers
-
-Set `NOTIFIER` to choose how the digest is delivered (default `smtp`):
-
-| `NOTIFIER` | How | Key config |
-|---|---|---|
-| `smtp` | Gmail / any SMTP server | `GMAIL_*` or `SMTP_*` below |
-| `resend` | Resend HTTP API | `RESEND_API_KEY` (+ optional `RESEND_FROM`) |
-
-**Resend:** create a key at https://resend.com/api-keys. Out of the box Resend
-only lets you send *to your own* email (the one you signed up with); to send to
-other addresses you must verify a domain under Domains. Until then, set
-`RECIPIENT_EMAIL` to your signup address. `RESEND_FROM` defaults to
-`onboarding@resend.dev`.
-
-### Environment Variables
-
-All values can be set in `.env` or as environment variables.
-
-| Variable | Required | Description |
-|---|---|---|
-| `GITHUB_TOKEN` | Yes | GitHub personal access token (repo scope) |
-| `GITHUB_REPOS` | Yes | Comma-separated list of repos (owner/repo format) |
-| `GEMINI_API_KEY` | No* | Google AI Studio key (tried first) |
-| `OPENROUTER_API_KEY` | No* | OpenRouter key (tried second; alias `OPEN_ROUTER_API_KEY` accepted) |
-| `GROQ_API_KEY` | No* | Groq key (tried third) |
-| `MISTRAL_API_KEY` | No* | Mistral key (tried fourth) |
-| `SMTP_HOST` | No | SMTP host (default `smtp.gmail.com`) |
-| `SMTP_PORT` | No | SMTP port (default `465`) |
-| `SMTP_STARTTLS` | No | `true` to use STARTTLS (needed for port 587) |
-| `SMTP_USER` / `SMTP_PASSWORD` | No | SMTP credentials (fall back to GMAIL_* ) |
-| `GMAIL_ADDRESS` | No | Gmail address (used as SMTP user fallback) |
-| `GMAIL_APP_PASSWORD` | No | Gmail app password |
-| `NOTIFIER` | No | Notifier to use: `smtp` (default) or `resend` |
-| `RESEND_API_KEY` | No* | Resend API key (for `NOTIFIER=resend`) |
-| `RESEND_FROM` | No | Resend sender (default `onboarding@resend.dev`) |
-| `RECIPIENT_EMAIL` | No | Recipient email (defaults to SMTP user) |
-| `LOOKBACK_DAYS` | No | Days to look back (default: 1) |
-| `DIGEST_OUTPUT_DIR` | No | Directory for generated PDFs (default: system temp dir) |
-| `REVIEW_MAX_REVIEWS` | No | Review/refine budget (default 6) |
-| `REVIEW_MIN_SCORE` | No | Quality bar (default 8.0) |
-| `PR_DEPTH` | No | Number of latest merged PRs deep-dived in parallel (default 3) |
-
-\* At least one of `GEMINI_API_KEY` / `OPENROUTER_API_KEY` / `GROQ_API_KEY` /
-`MISTRAL_API_KEY` is required. They are tried in that order.
-
-### Project Structure
+A **Hexagonal (Ports & Adapters)** design: the application core depends only on
+abstract *ports*, while concrete *adapters* (GitHub, LLM providers, ReportLab,
+SMTP/Resend) are injected at the composition boundary. This keeps business logic
+free of vendor SDKs and makes every stage independently testable.
 
 ```
-digest-agent/
-├── .github/
-│   └── workflows/
-│       └── daily-digest.yml    # GitHub Actions scheduler
-├── src/
-│   └── digest_agent/
-│       ├── ports/              # Abstract port interfaces
-│       │   ├── activity_source.py
-│       │   ├── llm_provider.py
-│       │   ├── document_renderer.py
-│       │   └── notifier.py
-│       ├── core/               # Application core (zero vendor imports)
-│       │   ├── state.py
-│       │   ├── policy.py
-│       │   ├── text_utils.py   # Output cleaning + review verdict parsing
-│       │   ├── deterministic.py# Programmatic git-only 'Executive Snapshot'
-│       │   ├── orchestrator.py
-│       │   └── fakes.py        # In-memory fakes for testing the core
-│       ├── adapters/
-│       │   └── driven/
-│       │       ├── openai_compat.py       # Shared OpenAI-compatible base
-│       │       ├── fallback_provider.py   # Groq -> Mistral -> OpenRouter chain
-│       │       ├── github_adapter.py
-│       │       ├── openrouter_adapter.py
-│       │       ├── groq_adapter.py
-│       │       ├── mistral_adapter.py
-│       │       ├── reportlab_adapter.py
-│       │       ├── gmail_adapter.py       # SMTPAdapter (Gmail/Ethereal/SMTP)
-│       │       └── gemini_adapter.py      # Google AI Studio (Gemini)
-│       └── main.py             # Entry point - wires adapters at composition boundary
-├── tests/                      # Comprehensive test suite
-│   ├── test_policy.py          # unit tests for ModelSelectionPolicy
-│   ├── test_orchestrator.py    # integration tests for Orchestrator
-│   ├── test_review_loop.py     # commit + refine loop tests
-│   ├── test_pr_workers.py      # per-PR parallel loop tests
-│   ├── test_deterministic.py   # deterministic snapshot tests
-│   └── ... (adapters tests)
-├── pyproject.toml              # UV package configuration
-├── requirements.txt            # Pinned dependencies (generated by uv)
-├── .env.example                # Environment template (copy to .env)
-├── .gitignore                  # Git ignore rules
-├── Dockerfile                  # Containerized run
-├── .dockerignore
-├── LICENSE                     # MIT License
-├── CHANGELOG.md                # Version history
-├── graph.svg                   # Visual pipeline topology
-└── README.md                   # This file
+ src/digest_agent/
+ ├── ports/          # Abstract contracts (no vendor imports)
+ ├── core/           # Orchestrator, state, policy, deterministic snapshot, fakes
+ ├── adapters/       # Driven adapters (GitHub, Gemini/Groq/Mistral/OpenRouter,
+ │                   #   ReportLab PDF, SMTP/Resend)
+ └── main.py         # Composition root
 ```
 
-### Definition of Done
-
-- [x] Orchestrator and ModelSelectionPolicy contain no vendor imports
-- [x] Graph has multiple bounded cycles (model selection; committee review <-> refine)
-- [x] All loops have proven upper bounds on iterations
-- [x] All model-selection loop exit paths are reachable and observable in tests
-- [x] Review committee degrades gracefully: rate-limited reviewers or a failed
-      refine step never discard an acceptable draft
-- [x] Deterministic summary is prepended; diff data (files, patches) feeds the AI
-- [x] No hardcoded model ID anywhere in the codebase
-- [x] A failed model-selection loop never silently proceeds to summarize
-- [x] Swapping any one adapter (e.g. Gmail → Resend) requires touching
-      exactly one new file plus the composition boundary — nothing inside
-      Orchestrator or ModelSelectionPolicy
-
-### Testing
+## 🧪 Tests
 
 ```bash
-# Run all tests
 python -m pytest tests/ -v
-
-# Full suite: 44+ tests (policy, orchestrator integration, review loop,
-# per-PR parallel loops, deterministic snapshot, adapters)
 ```
+
+44 tests cover the model-selection evaluator, the parallel per-PR loops, the
+review/refine committee, the deterministic snapshot, and every adapter.
+
+## 🔍 Sample Report
+
+See everything end-to-end: **[open a real generated digest (PDF)](docs/sample-digest.pdf)**.
+
+---
 
 ### License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### Design References
-
-- **Design Specification**: `software-architecture.md` / `digest-agent-design-spec.md`
-- **Architecture**: Hexagonal (Ports & Adapters) pattern, Dependency Inversion Principle
-- **Patterns**: Prompt Chaining (outer pipeline), Evaluator-Optimizer (model selection)
+Released under the **[MIT License](LICENSE)**. You're free to use, modify, and
+distribute it — just retain the copyright notice.
