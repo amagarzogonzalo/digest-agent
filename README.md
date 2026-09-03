@@ -1,24 +1,52 @@
-# GitHub Digest Agent
+# 🤖 GitHub Digest Agent
 
-[![CI](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
-[![Daily Digest](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/daily-digest.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
-[![Python](https://img.shields.io/badge/Python-3.11_%7C_3.12-blue)](#)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](#)
-[![LangGraph](https://img.shields.io/badge/LangGraph-✓-7c3aed)](#)
-[![Hexagonal](https://img.shields.io/badge/Architecture-Hexagonal%20%28Ports%20%26%20Adapters%29-1d4ed8)](#)
-[![PyPI? no](https://img.shields.io/badge/deploy-GitHub%20Actions%20cron-0ea5e9)](#)
+An **autonomous, scheduled engineering report generator.** Every morning it reads
+the latest commits, pull requests and **actual diffs** from your repositories,
+deep-dives each of the most recent PRs with **parallel AI sub-agents**, self-reviews
+and refines until it passes a quality bar, then emails you a **professional,
+color-coded PDF** — stamped with a unique run ID.
 
-A professional **Hexagonal (Ports & Adapters)** agent that, on a schedule, reads
-recent commits/PRs across configurable repositories, selects a currently-free
-LLM (testing candidates until one works), summaries the activity with parallel
-per-PR deep-dive agents, renders a color-coded PDF, and emails it.
+<p align="center">
+  <a href="docs/sample-digest.pdf">
+    <img src="https://img.shields.io/badge/📄-View%20Sample%20Report-7c3aed?style=for-the-badge" alt="Sample digest"/>
+  </a>
+  →
+  <strong>see a real generated digest</strong>
+</p>
 
-## Pipeline
+## ✨ Highlights
 
-![digest-agent pipeline](graph.svg)
+| Capability | What it does |
+|---|---|
+| 🧠 **Hexagonal core** | Ports & Adapters — zero vendor imports in business logic |
+| ⚡ **Parallel agents** | `k` per-PR sub-agents deep-dive & self-review **concurrently** |
+| 🧑‍⚖️ **Review committee** | 3 reviewers + refine loop until `min_quality_score` (8.0) |
+| 🔁 **Per-agent model loop** | each sub-agent re-selects a working free LLM (Gemini → OpenRouter → Groq → Mistral) |
+| 🔍 **Diff-aware** | reads real patches — names files, functions, PRs, code |
+| 📄 **Color-coded PDF** | green added / red removed, cover band, page numbers |
+| 🆔 **Report identity** | unique UID + version + UTC timestamp per run |
+| ⏰ **Auto-scheduled** | GitHub Actions cron at 07:00 Europe/Amsterdam |
 
-## Overview
+<p align="center">
+  [![CI](https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/amagarzogonzalo/digest-agent/actions)
+  [![Python](https://img.shields.io/badge/Python-3.11_%7C_3.12-blue)](#)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+  [![Tests](https://img.shields.io/badge/tests-44%20passing-brightgreen)](#)
+  [![LangGraph](https://img.shields.io/badge/LangGraph-✓-7c3aed)](#)
+  [![Docker](https://img.shields.io/badge/Docker-ready-2496ed)](#)
+  [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal-1d4ed8)](#)
+</p>
+
+## 🖼️ Pipeline
+
+<p align="center">
+  <img src="graph.svg" alt="digest-agent pipeline" width="90%"/>
+</p>
+
+### 📎 Sample report
+
+Want to see what it produces? **[Open a real generated digest (PDF)](docs/sample-digest.pdf)** —
+a color-coded, diff-rich engineering report emailed automatically by the agent.
 
 This project implements the **Hexagonal (Ports & Adapters)** design pattern at
 the system level, solving the concrete problem of business rules being welded

@@ -43,4 +43,5 @@ gmail_credentials/
 # Generated digest PDFs
 digests/
 *.pdf
+!docs/sample-digest.pdf
 ```
