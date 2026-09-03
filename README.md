@@ -25,10 +25,19 @@ color-coded PDF** — stamped with a unique run ID.
 
 <p align="center">
   <a href="https://github.com/amagarzogonzalo/digest-agent/actions"><img src="https://github.com/amagarzogonzalo/digest-agent/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/Python-3.11_%7C_3.12-blue" alt="Python">
+  <img src="https://img.shields.io/badge/Python-3.11_%7C_3.12-blue?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
   <img src="https://img.shields.io/badge/tests-44%20passing-brightgreen" alt="tests">
-  <img src="https://img.shields.io/badge/stack-LangGraph%20%C2%B7%20ReportLab%20%C2%B7%20Docker-blueviolet" alt="stack">
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/LangGraph-black?logo=langchain&logoColor=white" alt="LangGraph">
+  <img src="https://img.shields.io/badge/ReportLab-grey?logo=python&logoColor=white" alt="ReportLab">
+  <img src="https://img.shields.io/badge/FastAPI-grey?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Docker-black?logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/GitHub%20Actions-black?logo=githubactions&logoColor=white" alt="GitHub Actions">
+  <img src="https://img.shields.io/badge/Groq-grey?logo=groq" alt="Groq">
+  <img src="https://img.shields.io/badge/Mistral-grey?logo=mistral" alt="Mistral">
 </p>
 
 ## 🖼️ Pipeline
@@ -37,7 +46,8 @@ color-coded PDF** — stamped with a unique run ID.
   <img src="graph.svg" alt="digest-agent pipeline" width="92%"/>
 </p>
 
-The system composes two **bounded, self-improving loops** (both provably terminate):
+The system composes two **bounded, self-improving loops** (each has a hard cap on
+iterations, so it is guaranteed to terminate):
 
 1. **Per-MR agent loop** — each of the latest `k` merged PRs runs its own
    `deep-dive → review → refine` cycle in **parallel**, grounded in that PR's real diff.
