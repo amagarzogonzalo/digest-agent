@@ -33,7 +33,6 @@ color-coded PDF** — stamped with a unique run ID.
 <p align="center">
   <img src="https://img.shields.io/badge/LangGraph-black?logo=langchain&logoColor=white" alt="LangGraph">
   <img src="https://img.shields.io/badge/ReportLab-grey?logo=python&logoColor=white" alt="ReportLab">
-  <img src="https://img.shields.io/badge/FastAPI-grey?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/Docker-black?logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/GitHub%20Actions-black?logo=githubactions&logoColor=white" alt="GitHub Actions">
   <img src="https://img.shields.io/badge/Groq-grey?logo=groq" alt="Groq">
