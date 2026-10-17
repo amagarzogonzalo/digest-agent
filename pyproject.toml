@@ -18,6 +18,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
+    "pre-commit>=3.7",
+    "detect-secrets>=1.5",
 ]
 
 [tool.setuptools.packages.find]

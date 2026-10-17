@@ -44,4 +44,6 @@ gmail_credentials/
 digests/
 *.pdf
 !docs/sample-digest.pdf
-```
+
+# Secret scanning (detect-secrets baseline is committed; local cache is not)
+.secrets.baseline.*

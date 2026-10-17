@@ -1,0 +1,23 @@
+# Gitleaks configuration.
+# Extends the built-in rule set and adds project-specific allowlists so that
+# obviously-fake placeholders in the example env file do not raise findings.
+# Docs: https://github.com/gitleaks/gitleaks#configuration
+
+title = "digest-agent gitleaks config"
+
+[extend]
+# Use the default gitleaks rules as the base.
+useDefault = true
+
+[[allowlists]]
+description = "Example env file only contains placeholders, not real secrets"
+paths = [
+  '''^\.env\.example$''',
+]
+
+[[allowlists]]
+description = "Test fixtures and sample docs may contain dummy tokens"
+paths = [
+  '''^tests/''',
+  '''^docs/''',
+]
